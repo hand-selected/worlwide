@@ -1,0 +1,1639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Hand Selected</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #F5F0E8;
+  --warm: #FAF7F2;
+  --ink: #161210;
+  --gold: #C9A96E;
+  --gold-lt: #E8D5B0;
+  --muted: #9A8E82;
+  --div: #E8E0D4;
+  --card: #FFFFFF;
+  --safe-top: env(safe-area-inset-top, 44px);
+  --safe-bot: env(safe-area-inset-bottom, 34px);
+  --tab-h: 72px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  width: 100%; max-width: 430px; margin: 0 auto;
+  height: 100vh; overflow: hidden;
+  background: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── APP SHELL ── */
+#app {
+  width: 100%; height: 100vh;
+  position: relative; overflow: hidden;
+  background: var(--cream);
+}
+
+/* ── SCREENS ── */
+.screen {
+  position: absolute; inset: 0;
+  overflow-y: auto; overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  background: var(--cream);
+  opacity: 0; pointer-events: none;
+  transform: translateX(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  padding-bottom: calc(var(--tab-h) + var(--safe-bot));
+}
+
+.screen.active {
+  opacity: 1; pointer-events: all;
+  transform: translateX(0);
+}
+
+.screen-inner {
+  position: absolute; inset: 0;
+  overflow-y: auto; overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(var(--tab-h) + var(--safe-bot) + 20px);
+}
+
+/* ── STATUS BAR SPACER ── */
+.status-bar {
+  height: calc(var(--safe-top) + 8px);
+  background: transparent;
+  min-height: 48px;
+}
+
+/* ── TOP NAV BAR ── */
+.top-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px 16px;
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(245,240,232,0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.top-bar-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px; font-weight: 400;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--ink);
+}
+
+.top-bar-logo span { color: var(--gold); }
+
+.top-bar-actions { display: flex; gap: 16px; align-items: center; }
+
+.icon-btn {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border: none; background: none; cursor: pointer;
+  color: var(--ink); position: relative;
+}
+
+.icon-btn svg { width: 22px; height: 22px; }
+
+.badge {
+  position: absolute; top: 2px; right: 2px;
+  width: 16px; height: 16px;
+  background: var(--gold); color: white;
+  border-radius: 50%; font-size: 9px; font-weight: 500;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── BOTTOM TAB BAR ── */
+.tab-bar {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 430px;
+  height: calc(var(--tab-h) + var(--safe-bot));
+  background: rgba(245,240,232,0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--div);
+  display: flex; align-items: flex-start;
+  justify-content: space-around;
+  padding-top: 10px;
+  z-index: 100;
+}
+
+.tab-item {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  flex: 1; cursor: pointer; border: none; background: none;
+  padding: 4px 0; transition: all 0.2s;
+  color: var(--muted);
+}
+
+.tab-item.active { color: var(--ink); }
+
+.tab-item svg { width: 22px; height: 22px; transition: transform 0.2s; }
+.tab-item.active svg { transform: scale(1.1); }
+
+.tab-label {
+  font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
+  font-weight: 400;
+}
+
+.tab-scan {
+  width: 52px; height: 52px;
+  background: var(--ink); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: -20px;
+  border: 3px solid var(--cream);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.tab-scan:active { transform: scale(0.95); }
+.tab-scan svg { width: 22px; height: 22px; color: var(--gold); }
+
+/* ═══════════════════════════════════════
+   SCREEN 1: DISCOVER (HOME)
+═══════════════════════════════════════ */
+#screen-home .hero-card {
+  margin: 0 16px 20px;
+  border-radius: 20px; overflow: hidden;
+  height: 400px; position: relative;
+  background: linear-gradient(145deg, #2C2018 0%, #4A3525 40%, #3D2E1E 70%, #1E1410 100%);
+  cursor: pointer;
+}
+
+#screen-home .hero-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 30% 30%, rgba(201,169,110,0.2) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 70%, rgba(201,169,110,0.1) 0%, transparent 50%);
+}
+
+.hero-card-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(16,10,6,0.9) 0%, transparent 50%);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 24px;
+}
+
+.hero-hotel-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(201,169,110,0.2);
+  border: 1px solid rgba(201,169,110,0.4);
+  padding: 5px 12px; border-radius: 20px;
+  font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 12px; width: fit-content;
+}
+
+.hero-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+
+.hero-card h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px; font-weight: 300; color: var(--cream);
+  line-height: 1.1; margin-bottom: 6px;
+}
+
+.hero-card-sub {
+  font-size: 12px; color: rgba(245,240,232,0.6); margin-bottom: 16px;
+}
+
+.hero-card-btn {
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(245,240,232,0.1);
+  border: 1px solid rgba(245,240,232,0.25);
+  border-radius: 10px; padding: 12px 16px;
+  color: var(--cream); font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.hero-card-btn span { color: var(--gold); font-size: 18px; }
+
+/* hotel dots indicator */
+.hero-dots {
+  display: flex; gap: 6px; justify-content: center;
+  margin-bottom: 24px;
+}
+.hero-dot-ind {
+  width: 6px; height: 6px; border-radius: 3px;
+  background: var(--div); transition: all 0.3s;
+}
+.hero-dot-ind.active { width: 20px; background: var(--gold); }
+
+/* Section headers */
+.sec-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px; margin-bottom: 14px;
+}
+
+.sec-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px; font-weight: 400;
+}
+
+.sec-more {
+  font-size: 11px; letter-spacing: 1px; color: var(--gold);
+  background: none; border: none; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* Horizontal scroll rows */
+.h-scroll {
+  display: flex; gap: 12px;
+  overflow-x: auto; padding: 0 20px 4px;
+  scrollbar-width: none; -ms-overflow-style: none;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+.h-scroll::-webkit-scrollbar { display: none; }
+
+/* Hotel pill cards */
+.hotel-pill {
+  flex-shrink: 0; width: 160px;
+  border-radius: 14px; overflow: hidden;
+  scroll-snap-align: start; cursor: pointer;
+  position: relative;
+}
+
+.hotel-pill-img {
+  height: 110px;
+  transition: transform 0.3s;
+}
+
+.hotel-pill:active .hotel-pill-img { transform: scale(0.97); }
+
+.hp-1 { background: linear-gradient(145deg, #1E2D33 0%, #3D5058 50%, #1A2830 100%); }
+.hp-2 { background: linear-gradient(145deg, #2A2820 0%, #4A3D2E 50%, #231E18 100%); }
+.hp-3 { background: linear-gradient(145deg, #1A2820 0%, #2E4535 50%, #152018 100%); }
+.hp-4 { background: linear-gradient(145deg, #3D2E1E 0%, #6B4E35 50%, #2A1E10 100%); }
+.hp-5 { background: linear-gradient(145deg, #2A2A2E 0%, #3D3D50 50%, #1E1E28 100%); }
+
+.hotel-pill-img::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 40% 30%, rgba(201,169,110,0.15) 0%, transparent 70%);
+}
+
+.hotel-pill-info {
+  background: white; padding: 10px 12px;
+}
+
+.hotel-pill-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px; line-height: 1.2; margin-bottom: 2px;
+}
+
+.hotel-pill-loc {
+  font-size: 10px; color: var(--muted);
+}
+
+/* Category chips */
+.cat-chips {
+  display: flex; gap: 8px;
+  overflow-x: auto; padding: 0 20px 4px;
+  scrollbar-width: none;
+}
+.cat-chips::-webkit-scrollbar { display: none; }
+
+.cat-chip {
+  flex-shrink: 0;
+  padding: 8px 16px; border-radius: 20px;
+  font-size: 11px; letter-spacing: 1px;
+  text-transform: uppercase; cursor: pointer;
+  border: 1px solid var(--div);
+  background: white; color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.cat-chip.active, .cat-chip:active {
+  background: var(--ink); color: var(--cream);
+  border-color: var(--ink);
+}
+
+/* Product cards - grid 2col */
+.prod-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 2px; padding: 0 16px;
+  margin-top: 4px;
+}
+
+.prod-card {
+  border-radius: 12px; overflow: hidden;
+  background: white; cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.prod-card:active { transform: scale(0.97); }
+
+.prod-card-img {
+  aspect-ratio: 3/4; position: relative;
+}
+
+.pc-1 { background: linear-gradient(145deg, #E8DDD0, #C4B098, #A8907A); }
+.pc-2 { background: linear-gradient(145deg, #2A3540, #3D5060, #1E2D38); }
+.pc-3 { background: linear-gradient(145deg, #F0EAE0, #D8CCBC, #C0B0A0); }
+.pc-4 { background: linear-gradient(145deg, #1A1A1A, #2D2D2D, #151515); }
+.pc-5 { background: linear-gradient(145deg, #3D2820, #6B3D28, #2E1E15); }
+.pc-6 { background: linear-gradient(145deg, #E0D8CC, #C8BCAC, #B0A090); }
+
+.prod-card-img::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 25%, rgba(255,255,255,0.15) 0%, transparent 70%);
+}
+
+.prod-tag {
+  position: absolute; top: 10px; left: 10px;
+  padding: 3px 8px; border-radius: 4px;
+  font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase;
+  font-weight: 500; z-index: 1;
+}
+
+.prod-tag.new { background: var(--gold); color: var(--ink); }
+.prod-tag.exc { background: var(--ink); color: var(--cream); }
+
+.prod-save {
+  position: absolute; top: 10px; right: 10px;
+  width: 28px; height: 28px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 50%; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; z-index: 1;
+}
+
+.prod-card-info { padding: 10px 12px 14px; }
+
+.prod-card-cat {
+  font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 3px;
+}
+
+.prod-card-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 15px; line-height: 1.2; margin-bottom: 2px;
+}
+
+.prod-card-hotel { font-size: 10px; color: var(--muted); margin-bottom: 8px; }
+
+.prod-card-foot {
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.prod-card-price {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px; font-weight: 300;
+}
+
+.prod-add-btn {
+  width: 28px; height: 28px;
+  background: var(--ink); color: var(--cream);
+  border: none; border-radius: 8px; cursor: pointer;
+  font-size: 18px; display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+
+/* ═══════════════════════════════════════
+   SCREEN 2: SCAN
+═══════════════════════════════════════ */
+#screen-scan {
+  background: var(--ink);
+}
+
+.scan-header {
+  padding: 20px 20px 0;
+}
+
+.scan-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px; font-weight: 300;
+  color: var(--cream); margin-bottom: 6px;
+}
+
+.scan-sub {
+  font-size: 13px; color: rgba(245,240,232,0.5); line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+/* Camera viewfinder */
+.viewfinder {
+  margin: 0 20px;
+  border-radius: 20px; overflow: hidden;
+  position: relative;
+  background: linear-gradient(145deg, #3D2E1E 0%, #6B4E35 40%, #4A3525 70%, #2E1E10 100%);
+  aspect-ratio: 3/4;
+}
+
+.viewfinder::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 40% 35%, rgba(201,169,110,0.18) 0%, transparent 60%);
+}
+
+.vf-corners {
+  position: absolute; inset: 0;
+  pointer-events: none;
+}
+
+.vf-corner {
+  position: absolute; width: 28px; height: 28px;
+  border-color: var(--gold); border-style: solid; border-width: 0;
+  border-radius: 2px;
+}
+
+.vf-corner.tl { top: 20px; left: 20px; border-top-width: 2px; border-left-width: 2px; }
+.vf-corner.tr { top: 20px; right: 20px; border-top-width: 2px; border-right-width: 2px; }
+.vf-corner.bl { bottom: 20px; left: 20px; border-bottom-width: 2px; border-left-width: 2px; }
+.vf-corner.br { bottom: 20px; right: 20px; border-bottom-width: 2px; border-right-width: 2px; }
+
+.vf-scan-line {
+  position: absolute; left: 20px; right: 20px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  animation: vfScan 2.5s ease-in-out infinite;
+}
+
+@keyframes vfScan {
+  0% { top: 20px; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: calc(100% - 20px); opacity: 0; }
+}
+
+.vf-hotspots {
+  position: absolute; inset: 0;
+}
+
+.vf-hotspot {
+  position: absolute;
+  width: 36px; height: 36px;
+  border: 1.5px solid var(--gold);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.vf-hotspot::after {
+  content: '';
+  width: 8px; height: 8px;
+  background: var(--gold); border-radius: 50%;
+}
+
+.vf-hotspot-1 { top: 35%; left: 20%; animation-delay: 0s; }
+.vf-hotspot-2 { top: 25%; right: 25%; animation-delay: 0.5s; }
+.vf-hotspot-3 { bottom: 35%; left: 45%; animation-delay: 1s; }
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+.vf-bottom-bar {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: rgba(16,10,6,0.85);
+  backdrop-filter: blur(10px);
+  padding: 16px 20px;
+  border-top: 1px solid rgba(201,169,110,0.2);
+}
+
+.vf-identified {
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 12px;
+}
+
+.vf-items-row {
+  display: flex; gap: 10px;
+}
+
+.vf-item {
+  flex: 1; background: rgba(245,240,232,0.08);
+  border: 1px solid rgba(245,240,232,0.15);
+  border-radius: 10px; padding: 10px;
+  display: flex; flex-direction: column; gap: 4px;
+  cursor: pointer; transition: all 0.2s;
+}
+
+.vf-item:active { background: rgba(201,169,110,0.15); }
+
+.vf-item-swatch {
+  width: 28px; height: 28px; border-radius: 6px;
+  margin-bottom: 4px;
+}
+.vs-1 { background: linear-gradient(135deg, #8B6E52, #6B4E35); }
+.vs-2 { background: linear-gradient(135deg, #C4A882, #A08060); }
+.vs-3 { background: linear-gradient(135deg, #3D3028, #2A2018); }
+
+.vf-item-name { font-size: 10px; color: var(--cream); font-weight: 400; }
+.vf-item-price { font-size: 11px; color: var(--gold); font-family: 'Cormorant Garamond', serif; }
+
+.vf-add {
+  width: 20px; height: 20px;
+  background: var(--gold); border: none; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink); font-size: 14px; cursor: pointer;
+  margin-top: auto; align-self: flex-end;
+}
+
+/* Upload button */
+.upload-row {
+  display: flex; gap: 10px; margin: 16px 20px 0;
+}
+
+.upload-btn {
+  flex: 1; padding: 16px;
+  border-radius: 14px; border: none; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
+  font-weight: 400; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+
+.upload-btn:active { transform: scale(0.97); }
+
+.upload-btn.primary {
+  background: var(--gold); color: var(--ink);
+}
+
+.upload-btn.secondary {
+  background: rgba(245,240,232,0.1);
+  border: 1px solid rgba(245,240,232,0.2);
+  color: var(--cream);
+}
+
+.upload-btn svg { width: 16px; height: 16px; }
+
+/* ═══════════════════════════════════════
+   SCREEN 3: HOTELS
+═══════════════════════════════════════ */
+#screen-hotels .hotels-list {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 0 16px;
+}
+
+.hotel-full-card {
+  border-radius: 16px; overflow: hidden;
+  position: relative; height: 220px; cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.hotel-full-card:active { transform: scale(0.98); }
+
+.hfc-1 { background: linear-gradient(135deg, #2C2018, #4A3525, #3D2E1E); }
+.hfc-2 { background: linear-gradient(135deg, #1E2D33, #3D5058, #1A2830); }
+.hfc-3 { background: linear-gradient(135deg, #2A2A2A, #3D3D3D, #252525); }
+.hfc-4 { background: linear-gradient(135deg, #1A2820, #2E4535, #152018); }
+.hfc-5 { background: linear-gradient(135deg, #2A2820, #4A3D2E, #231E18); }
+
+.hotel-full-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 35% 35%, rgba(201,169,110,0.15) 0%, transparent 60%);
+}
+
+.hfc-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(16,10,6,0.88) 0%, transparent 55%);
+  padding: 20px; display: flex; flex-direction: column; justify-content: flex-end;
+}
+
+.hfc-badge {
+  position: absolute; top: 16px; left: 16px;
+  background: var(--gold); color: var(--ink);
+  font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 4px; font-weight: 500;
+}
+
+.hfc-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px; font-weight: 300; color: var(--cream);
+  margin-bottom: 4px;
+}
+
+.hfc-loc {
+  font-size: 11px; color: rgba(245,240,232,0.6); margin-bottom: 12px;
+}
+
+.hfc-foot {
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.hfc-count {
+  font-size: 11px; letter-spacing: 1px; color: var(--gold-lt);
+}
+
+.hfc-arrow {
+  width: 32px; height: 32px;
+  background: rgba(245,240,232,0.15);
+  border: 1px solid rgba(245,240,232,0.25);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--cream); font-size: 16px;
+}
+
+/* ═══════════════════════════════════════
+   SCREEN 4: WISHLIST
+═══════════════════════════════════════ */
+.wishlist-empty {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  height: 50vh; gap: 16px; padding: 40px;
+  text-align: center;
+}
+
+.wishlist-empty-icon {
+  font-size: 48px; opacity: 0.3;
+}
+
+.wishlist-empty h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px; font-weight: 300; color: var(--ink);
+}
+
+.wishlist-empty p {
+  font-size: 13px; color: var(--muted); line-height: 1.6;
+}
+
+.wishlist-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 2px; padding: 0 16px;
+}
+
+.wishlist-card {
+  border-radius: 12px; overflow: hidden;
+  background: white; position: relative;
+  cursor: pointer;
+}
+
+.wc-img { aspect-ratio: 1; }
+.wc-1 { background: linear-gradient(135deg, #E8DDD0, #C4B098); }
+.wc-2 { background: linear-gradient(135deg, #2A3540, #3D5060); }
+.wc-3 { background: linear-gradient(135deg, #F0EAE0, #D8CCBC); }
+.wc-4 { background: linear-gradient(135deg, #3D2820, #6B3D28); }
+
+.wc-remove {
+  position: absolute; top: 8px; right: 8px;
+  width: 24px; height: 24px;
+  background: rgba(255,255,255,0.9); border-radius: 50%;
+  border: none; cursor: pointer;
+  font-size: 12px; display: flex; align-items: center; justify-content: center;
+}
+
+.wc-info { padding: 10px 12px 12px; }
+.wc-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 15px; margin-bottom: 4px;
+}
+.wc-price { font-size: 13px; color: var(--gold); }
+
+/* ═══════════════════════════════════════
+   SCREEN 5: PROFILE
+═══════════════════════════════════════ */
+.profile-hero {
+  margin: 0 16px 20px;
+  background: linear-gradient(135deg, var(--ink) 0%, #2A2018 100%);
+  border-radius: 20px; padding: 28px;
+  display: flex; align-items: center; gap: 16px;
+}
+
+.profile-avatar {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-lt));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px; color: var(--ink); font-weight: 400;
+}
+
+.profile-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px; color: var(--cream); font-weight: 300;
+}
+
+.profile-member {
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--gold); margin-top: 2px;
+}
+
+.profile-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 2px; margin: 0 16px 20px;
+}
+
+.profile-stat {
+  background: white; padding: 16px 12px; text-align: center;
+  border-radius: 10px;
+}
+
+.ps-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px; font-weight: 300; color: var(--gold);
+}
+
+.ps-label {
+  font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--muted); margin-top: 2px;
+}
+
+.profile-menu {
+  display: flex; flex-direction: column;
+  margin: 0 16px; gap: 2px;
+}
+
+.profile-menu-item {
+  display: flex; align-items: center; justify-content: space-between;
+  background: white; padding: 16px;
+  border-radius: 12px; cursor: pointer;
+  transition: background 0.15s;
+}
+
+.profile-menu-item:active { background: var(--cream); }
+
+.pmi-left { display: flex; align-items: center; gap: 14px; }
+
+.pmi-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--cream);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+
+.pmi-label { font-size: 14px; font-weight: 400; }
+.pmi-arrow { color: var(--muted); font-size: 18px; }
+
+/* ═══════════════════════════════════════
+   PRODUCT DETAIL SHEET
+═══════════════════════════════════════ */
+.sheet-backdrop {
+  position: fixed; inset: 0; background: rgba(16,10,6,0.6);
+  z-index: 200; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.sheet-backdrop.open { opacity: 1; pointer-events: all; }
+
+.bottom-sheet {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%);
+  width: 100%; max-width: 430px;
+  background: var(--warm);
+  border-radius: 24px 24px 0 0;
+  z-index: 201;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  max-height: 85vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.bottom-sheet.open { transform: translateX(-50%) translateY(0); }
+
+.sheet-handle {
+  width: 36px; height: 4px; border-radius: 2px;
+  background: var(--div); margin: 12px auto 4px;
+}
+
+.sheet-img {
+  width: calc(100% - 32px); margin: 0 16px;
+  border-radius: 16px; overflow: hidden;
+  aspect-ratio: 4/3;
+}
+
+.sheet-img-bg { width: 100%; height: 100%; }
+
+.sheet-body { padding: 20px 20px 8px; }
+
+.sheet-hotel-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(201,169,110,0.1);
+  border: 1px solid rgba(201,169,110,0.3);
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 12px;
+}
+
+.sheet-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px; font-weight: 300; line-height: 1.1;
+  margin-bottom: 6px;
+}
+
+.sheet-category { font-size: 11px; color: var(--muted); margin-bottom: 16px; }
+
+.sheet-price {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px; font-weight: 300; color: var(--gold);
+  margin-bottom: 16px;
+}
+
+.sheet-desc {
+  font-size: 13px; line-height: 1.8; color: var(--muted);
+  margin-bottom: 24px;
+}
+
+.sheet-divider { height: 1px; background: var(--div); margin-bottom: 24px; }
+
+.sheet-details {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; margin-bottom: 24px;
+}
+
+.sheet-detail { background: var(--cream); padding: 12px; border-radius: 10px; }
+.sd-label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.sd-value { font-size: 13px; font-weight: 400; color: var(--ink); }
+
+.sheet-actions {
+  display: flex; gap: 10px;
+  padding: 0 20px 20px;
+  position: sticky; bottom: 0;
+  background: var(--warm);
+  padding-bottom: calc(20px + var(--safe-bot));
+}
+
+.sheet-save-btn {
+  width: 48px; height: 52px;
+  border: 1.5px solid var(--div); border-radius: 12px;
+  background: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; transition: all 0.2s;
+}
+
+.sheet-save-btn:active { background: var(--cream); }
+
+.sheet-add-btn {
+  flex: 1; height: 52px;
+  background: var(--ink); color: var(--cream);
+  border: none; border-radius: 12px; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+  transition: all 0.2s;
+}
+
+.sheet-add-btn:active { background: var(--gold); transform: scale(0.98); }
+
+/* ═══════════════════════════════════════
+   CART SHEET
+═══════════════════════════════════════ */
+.cart-sheet {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%);
+  width: 100%; max-width: 430px;
+  background: var(--warm);
+  border-radius: 24px 24px 0 0;
+  z-index: 201;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  max-height: 90vh; display: flex; flex-direction: column;
+}
+
+.cart-sheet.open { transform: translateX(-50%) translateY(0); }
+
+.cart-sheet-head {
+  padding: 16px 20px 12px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--div);
+}
+
+.cart-sheet-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px; font-weight: 300;
+}
+
+.csh-close {
+  width: 30px; height: 30px;
+  background: var(--cream); border-radius: 50%; border: none;
+  cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted);
+}
+
+.cart-sheet-items {
+  flex: 1; overflow-y: auto; padding: 16px 20px;
+}
+
+.cart-sheet-item {
+  display: flex; gap: 14px; padding: 12px 0;
+  border-bottom: 1px solid var(--div);
+  align-items: center;
+}
+
+.csi-img {
+  width: 72px; height: 72px; border-radius: 10px; flex-shrink: 0;
+}
+
+.csi-1 { background: linear-gradient(135deg, #8B6E52, #6B4E35); }
+.csi-2 { background: linear-gradient(135deg, #2A3540, #3D5060); }
+.csi-3 { background: linear-gradient(135deg, #3D2820, #6B3D28); }
+
+.csi-info { flex: 1; }
+.csi-name { font-family: 'Cormorant Garamond', serif; font-size: 16px; margin-bottom: 2px; }
+.csi-hotel { font-size: 10px; color: var(--muted); margin-bottom: 6px; }
+.csi-price { font-size: 14px; color: var(--gold); font-family: 'Cormorant Garamond', serif; }
+
+.csi-remove {
+  background: none; border: none; color: var(--muted);
+  font-size: 20px; cursor: pointer; padding: 4px;
+}
+
+.cart-sheet-foot {
+  padding: 16px 20px;
+  border-top: 1px solid var(--div);
+  padding-bottom: calc(16px + var(--safe-bot));
+}
+
+.cst-row {
+  display: flex; justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.cst-label { font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+.cst-val { font-family: 'Cormorant Garamond', serif; font-size: 26px; }
+
+.checkout-btn-m {
+  width: 100%; height: 52px;
+  background: var(--ink); color: var(--cream);
+  border: none; border-radius: 14px; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+  transition: background 0.2s;
+}
+.checkout-btn-m:active { background: var(--gold); }
+
+/* ── TOAST ── */
+.m-toast {
+  position: fixed; bottom: calc(var(--tab-h) + var(--safe-bot) + 16px);
+  left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--ink); color: var(--cream);
+  padding: 12px 20px; border-radius: 24px;
+  font-size: 12px; letter-spacing: 1px;
+  z-index: 500; opacity: 0;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.m-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.m-toast-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+
+/* ── SECTION SPACING ── */
+.mb-24 { margin-bottom: 24px; }
+.mb-32 { margin-bottom: 32px; }
+.mt-8 { margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ══ SCREEN: DISCOVER ══ -->
+  <div class="screen active" id="screen-home">
+    <div class="screen-inner">
+      <div class="status-bar"></div>
+      <div class="top-bar">
+        <div class="top-bar-logo">Hand <span>Selected</span></div>
+        <div class="top-bar-actions">
+          <button class="icon-btn" onclick="switchScreen('screen-search')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          </button>
+          <button class="icon-btn" onclick="openCart()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <span class="badge" id="cartBadge">3</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Hero Card -->
+      <div class="hero-card mb-24" onclick="openProductSheet('Rosewood Suite', '$2,400', 'Rosewood São Paulo', 'Furniture', 'Handcrafted Belgian linen armchair from the Rosewood São Paulo Garden Suites.', 'pc-1')">
+        <div class="hero-card-overlay">
+          <div class="hero-hotel-tag"><span class="hero-dot"></span>Exclusive Partner</div>
+          <h2>Rosewood<br>São Paulo</h2>
+          <div class="hero-card-sub">47 curated pieces available</div>
+          <div class="hero-card-btn">
+            <span>Shop This Hotel</span>
+            <span>→</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Dots -->
+      <div class="hero-dots mb-32">
+        <div class="hero-dot-ind active"></div>
+        <div class="hero-dot-ind"></div>
+        <div class="hero-dot-ind"></div>
+        <div class="hero-dot-ind"></div>
+      </div>
+
+      <!-- Hotels Row -->
+      <div class="sec-head mb-24">
+        <div class="sec-title">Partner Hotels</div>
+        <button class="sec-more" onclick="switchScreen('screen-hotels')">See All</button>
+      </div>
+
+      <div class="h-scroll mb-32">
+        <div class="hotel-pill" onclick="switchScreen('screen-hotels')">
+          <div class="hotel-pill-img hp-1"></div>
+          <div class="hotel-pill-info">
+            <div class="hotel-pill-name">Aman New York</div>
+            <div class="hotel-pill-loc">New York, USA · 31 items</div>
+          </div>
+        </div>
+        <div class="hotel-pill" onclick="switchScreen('screen-hotels')">
+          <div class="hotel-pill-img hp-2"></div>
+          <div class="hotel-pill-info">
+            <div class="hotel-pill-name">The Connaught</div>
+            <div class="hotel-pill-loc">London, UK · 28 items</div>
+          </div>
+        </div>
+        <div class="hotel-pill" onclick="switchScreen('screen-hotels')">
+          <div class="hotel-pill-img hp-3"></div>
+          <div class="hotel-pill-info">
+            <div class="hotel-pill-name">1 Hotel SoBe</div>
+            <div class="hotel-pill-loc">Miami, USA · 38 items</div>
+          </div>
+        </div>
+        <div class="hotel-pill" onclick="switchScreen('screen-hotels')">
+          <div class="hotel-pill-img hp-4"></div>
+          <div class="hotel-pill-info">
+            <div class="hotel-pill-name">Four Seasons</div>
+            <div class="hotel-pill-loc">Florence, Italy · 52 items</div>
+          </div>
+        </div>
+        <div class="hotel-pill" onclick="switchScreen('screen-hotels')">
+          <div class="hotel-pill-img hp-5"></div>
+          <div class="hotel-pill-info">
+            <div class="hotel-pill-name">Bvlgari Milano</div>
+            <div class="hotel-pill-loc">Milan, Italy · 24 items</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Filter -->
+      <div class="cat-chips mb-24">
+        <div class="cat-chip active" onclick="filterCat(this)">All</div>
+        <div class="cat-chip" onclick="filterCat(this)">Furniture</div>
+        <div class="cat-chip" onclick="filterCat(this)">Lighting</div>
+        <div class="cat-chip" onclick="filterCat(this)">Linens</div>
+        <div class="cat-chip" onclick="filterCat(this)">Accessories</div>
+        <div class="cat-chip" onclick="filterCat(this)">Candles</div>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="sec-head">
+        <div class="sec-title">New Arrivals</div>
+        <button class="sec-more">View All</button>
+      </div>
+
+      <div class="prod-grid mt-8">
+        <div class="prod-card" onclick="openProductSheet('Linen Armchair', '$2,400', 'Rosewood São Paulo', 'Furniture', 'Handcrafted Belgian linen armchair exclusively from the Rosewood São Paulo Garden Suites. Solid walnut frame.', 'pc-1')">
+          <div class="prod-card-img pc-1">
+            <span class="prod-tag new">New</span>
+            <button class="prod-save" onclick="event.stopPropagation(); saveItem()">♡</button>
+          </div>
+          <div class="prod-card-info">
+            <div class="prod-card-cat">Furniture</div>
+            <div class="prod-card-name">Linen Armchair</div>
+            <div class="prod-card-hotel">Rosewood SP</div>
+            <div class="prod-card-foot">
+              <span class="prod-card-price">$2,400</span>
+              <button class="prod-add-btn" onclick="event.stopPropagation(); addToCartM()">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="prod-card" onclick="openProductSheet('Brass Table Lamp', '$890', 'Aman New York', 'Lighting', 'Handcrafted brushed brass table lamp from the Aman New York guest suites, with Como linen shade.', 'pc-2')">
+          <div class="prod-card-img pc-2">
+            <span class="prod-tag exc">Exclusive</span>
+            <button class="prod-save" onclick="event.stopPropagation(); saveItem()">♡</button>
+          </div>
+          <div class="prod-card-info">
+            <div class="prod-card-cat">Lighting</div>
+            <div class="prod-card-name">Brass Table Lamp</div>
+            <div class="prod-card-hotel">Aman New York</div>
+            <div class="prod-card-foot">
+              <span class="prod-card-price">$890</span>
+              <button class="prod-add-btn" onclick="event.stopPropagation(); addToCartM()">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="prod-card" onclick="openProductSheet('Linen Bedding Set', '$480', 'The Connaught', 'Linens', '600-thread count Egyptian cotton, monogrammed with The Connaught signature embroidery. Set of 4.', 'pc-3')">
+          <div class="prod-card-img pc-3">
+            <button class="prod-save" onclick="event.stopPropagation(); saveItem()">♡</button>
+          </div>
+          <div class="prod-card-info">
+            <div class="prod-card-cat">Linens</div>
+            <div class="prod-card-name">Linen Bedding Set</div>
+            <div class="prod-card-hotel">The Connaught</div>
+            <div class="prod-card-foot">
+              <span class="prod-card-price">$480</span>
+              <button class="prod-add-btn" onclick="event.stopPropagation(); addToCartM()">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="prod-card" onclick="openProductSheet('Marble Console', '$4,200', 'Four Seasons Florence', 'Furniture', 'Hand-carved Carrara marble console from the Four Seasons Firenze garden suites. Each piece unique.', 'pc-4')">
+          <div class="prod-card-img pc-4">
+            <span class="prod-tag exc">Exclusive</span>
+            <button class="prod-save" onclick="event.stopPropagation(); saveItem()">♡</button>
+          </div>
+          <div class="prod-card-info">
+            <div class="prod-card-cat">Furniture</div>
+            <div class="prod-card-name">Marble Console</div>
+            <div class="prod-card-hotel">Four Seasons FLR</div>
+            <div class="prod-card-foot">
+              <span class="prod-card-price">$4,200</span>
+              <button class="prod-add-btn" onclick="event.stopPropagation(); addToCartM()">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="prod-card" onclick="openProductSheet('Amber Candle', '$95', 'Rosewood São Paulo', 'Candles & Scent', 'The signature scent of Rosewood SP — amber, sandalwood, and tonka bean. Hand-poured in small batches.', 'pc-5')">
+          <div class="prod-card-img pc-5">
+            <span class="prod-tag new">New</span>
+            <button class="prod-save" onclick="event.stopPropagation(); saveItem()">♡</button>
+          </div>
+          <div class="prod-card-info">
+            <div class="prod-card-cat">Candles</div>
+            <div class="prod-card-name">Amber Candle</div>
+            <div class="prod-card-hotel">Rosewood SP</div>
+            <div class="prod-card-foot">
+              <span class="prod-card-price">$95</span>
+              <button class="prod-add-btn" onclick="event.stopPropagation(); addToCartM()">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="prod-card" onclick="openProductSheet('Woven Throw', '$320', '1 Hotel South Beach', 'Linens', 'Ethically sourced organic cotton throw, woven by artisans in Portugal. Featured in all 1 Hotel suites.', 'pc-6')">
+          <div class="prod-card-img pc-6">
+            <button class="prod-save" onclick="event.stopPropagation(); saveItem()">♡</button>
+          </div>
+          <div class="prod-card-info">
+            <div class="prod-card-cat">Linens</div>
+            <div class="prod-card-name">Woven Throw</div>
+            <div class="prod-card-hotel">1 Hotel SoBe</div>
+            <div class="prod-card-foot">
+              <span class="prod-card-price">$320</span>
+              <button class="prod-add-btn" onclick="event.stopPropagation(); addToCartM()">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ SCREEN: SCAN ══ -->
+  <div class="screen" id="screen-scan">
+    <div class="screen-inner" style="background:var(--ink)">
+      <div class="status-bar" style="background:var(--ink)"></div>
+      <div class="top-bar" style="background:rgba(22,18,16,0.92)">
+        <div class="top-bar-logo" style="color:var(--cream)">Photo <span>Scan</span></div>
+      </div>
+
+      <div class="scan-header">
+        <div class="scan-title">Photograph.<br>Identify. Own it.</div>
+        <div class="scan-sub">Point your camera at any hotel room. Our AI identifies every piece and shows you where to buy it.</div>
+      </div>
+
+      <!-- Viewfinder -->
+      <div class="viewfinder">
+        <div class="vf-corners">
+          <div class="vf-corner tl"></div>
+          <div class="vf-corner tr"></div>
+          <div class="vf-corner bl"></div>
+          <div class="vf-corner br"></div>
+        </div>
+        <div class="vf-scan-line"></div>
+        <div class="vf-hotspots">
+          <div class="vf-hotspot vf-hotspot-1" onclick="showToast('Linen Armchair — $2,400')"></div>
+          <div class="vf-hotspot vf-hotspot-2" onclick="showToast('Brass Lamp — $890')"></div>
+          <div class="vf-hotspot vf-hotspot-3" onclick="showToast('Oak Side Table — $1,200')"></div>
+        </div>
+        <div class="vf-bottom-bar">
+          <div class="vf-identified">3 Items Identified</div>
+          <div class="vf-items-row">
+            <div class="vf-item" onclick="addToCartM()">
+              <div class="vf-item-swatch vs-1"></div>
+              <div class="vf-item-name">Linen Chair</div>
+              <div class="vf-item-price">$2,400</div>
+              <button class="vf-add">+</button>
+            </div>
+            <div class="vf-item" onclick="addToCartM()">
+              <div class="vf-item-swatch vs-2"></div>
+              <div class="vf-item-name">Brass Lamp</div>
+              <div class="vf-item-price">$890</div>
+              <button class="vf-add">+</button>
+            </div>
+            <div class="vf-item" onclick="addToCartM()">
+              <div class="vf-item-swatch vs-3"></div>
+              <div class="vf-item-name">Oak Table</div>
+              <div class="vf-item-price">$1,200</div>
+              <button class="vf-add">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="upload-row">
+        <button class="upload-btn primary" onclick="showToast('Camera launching...')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          Take Photo
+        </button>
+        <button class="upload-btn secondary" onclick="showToast('Upload from library...')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          Upload
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN: HOTELS ══ -->
+  <div class="screen" id="screen-hotels">
+    <div class="screen-inner">
+      <div class="status-bar"></div>
+      <div class="top-bar">
+        <div class="top-bar-logo">Hotels</div>
+        <button class="icon-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+      </div>
+
+      <div class="hotels-list">
+        <div class="hotel-full-card hfc-1 mb-24" onclick="showToast('Loading Rosewood São Paulo...')">
+          <div class="hfc-badge">Exclusive</div>
+          <div class="hfc-overlay">
+            <div class="hfc-name">Rosewood São Paulo</div>
+            <div class="hfc-loc">São Paulo, Brazil</div>
+            <div class="hfc-foot">
+              <span class="hfc-count">47 items available</span>
+              <div class="hfc-arrow">→</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hotel-full-card hfc-2 mb-24" onclick="showToast('Loading Aman New York...')">
+          <div class="hfc-badge">New</div>
+          <div class="hfc-overlay">
+            <div class="hfc-name">Aman New York</div>
+            <div class="hfc-loc">New York, USA</div>
+            <div class="hfc-foot">
+              <span class="hfc-count">31 items available</span>
+              <div class="hfc-arrow">→</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hotel-full-card hfc-3 mb-24" onclick="showToast('Loading The Connaught...')">
+          <div class="hfc-overlay">
+            <div class="hfc-name">The Connaught</div>
+            <div class="hfc-loc">London, UK</div>
+            <div class="hfc-foot">
+              <span class="hfc-count">28 items available</span>
+              <div class="hfc-arrow">→</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hotel-full-card hfc-4 mb-24" onclick="showToast('Loading 1 Hotel South Beach...')">
+          <div class="hfc-badge">Sustainable</div>
+          <div class="hfc-overlay">
+            <div class="hfc-name">1 Hotel South Beach</div>
+            <div class="hfc-loc">Miami Beach, USA</div>
+            <div class="hfc-foot">
+              <span class="hfc-count">38 items available</span>
+              <div class="hfc-arrow">→</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hotel-full-card hfc-5 mb-24" onclick="showToast('Loading Four Seasons Florence...')">
+          <div class="hfc-overlay">
+            <div class="hfc-name">Four Seasons Florence</div>
+            <div class="hfc-loc">Florence, Italy</div>
+            <div class="hfc-foot">
+              <span class="hfc-count">52 items available</span>
+              <div class="hfc-arrow">→</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN: WISHLIST ══ -->
+  <div class="screen" id="screen-wishlist">
+    <div class="screen-inner">
+      <div class="status-bar"></div>
+      <div class="top-bar">
+        <div class="top-bar-logo">Saved</div>
+      </div>
+
+      <div class="wishlist-grid">
+        <div class="wishlist-card" onclick="openProductSheet('Linen Armchair', '$2,400', 'Rosewood São Paulo', 'Furniture', 'Handcrafted Belgian linen armchair from the Rosewood São Paulo Garden Suites.', 'pc-1')">
+          <div class="wc-img wc-1"></div>
+          <button class="wc-remove" onclick="event.stopPropagation(); showToast('Removed from saved')">×</button>
+          <div class="wc-info">
+            <div class="wc-name">Linen Armchair</div>
+            <div class="wc-price">$2,400</div>
+          </div>
+        </div>
+        <div class="wishlist-card" onclick="openProductSheet('Brass Table Lamp', '$890', 'Aman New York', 'Lighting', 'Handcrafted brushed brass table lamp from the Aman New York guest suites.', 'pc-2')">
+          <div class="wc-img wc-2"></div>
+          <button class="wc-remove" onclick="event.stopPropagation(); showToast('Removed from saved')">×</button>
+          <div class="wc-info">
+            <div class="wc-name">Brass Table Lamp</div>
+            <div class="wc-price">$890</div>
+          </div>
+        </div>
+        <div class="wishlist-card" onclick="openProductSheet('Linen Bedding Set', '$480', 'The Connaught', 'Linens', '600-thread count Egyptian cotton from The Connaught.', 'pc-3')">
+          <div class="wc-img wc-3"></div>
+          <button class="wc-remove" onclick="event.stopPropagation(); showToast('Removed from saved')">×</button>
+          <div class="wc-info">
+            <div class="wc-name">Linen Bedding</div>
+            <div class="wc-price">$480</div>
+          </div>
+        </div>
+        <div class="wishlist-card" onclick="openProductSheet('Amber Candle', '$95', 'Rosewood São Paulo', 'Candles', 'Signature scent of Rosewood SP.', 'pc-5')">
+          <div class="wc-img wc-4"></div>
+          <button class="wc-remove" onclick="event.stopPropagation(); showToast('Removed from saved')">×</button>
+          <div class="wc-info">
+            <div class="wc-name">Amber Candle</div>
+            <div class="wc-price">$95</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN: PROFILE ══ -->
+  <div class="screen" id="screen-profile">
+    <div class="screen-inner">
+      <div class="status-bar"></div>
+      <div class="top-bar">
+        <div class="top-bar-logo">Profile</div>
+        <button class="icon-btn" onclick="showToast('Settings')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+      </div>
+
+      <div class="profile-hero mb-24">
+        <div class="profile-avatar">A</div>
+        <div>
+          <div class="profile-name">Alexandra</div>
+          <div class="profile-member">Gold Member</div>
+        </div>
+      </div>
+
+      <div class="profile-stats mb-24">
+        <div class="profile-stat">
+          <div class="ps-num">12</div>
+          <div class="ps-label">Orders</div>
+        </div>
+        <div class="profile-stat">
+          <div class="ps-num">4</div>
+          <div class="ps-label">Saved</div>
+        </div>
+        <div class="profile-stat">
+          <div class="ps-num">7</div>
+          <div class="ps-label">Hotels</div>
+        </div>
+      </div>
+
+      <div class="profile-menu mb-32">
+        <div class="profile-menu-item" onclick="showToast('Opening orders...')">
+          <div class="pmi-left">
+            <div class="pmi-icon">📦</div>
+            <span class="pmi-label">My Orders</span>
+          </div>
+          <span class="pmi-arrow">›</span>
+        </div>
+        <div class="profile-menu-item" onclick="switchScreen('screen-wishlist')">
+          <div class="pmi-left">
+            <div class="pmi-icon">♡</div>
+            <span class="pmi-label">Saved Items</span>
+          </div>
+          <span class="pmi-arrow">›</span>
+        </div>
+        <div class="profile-menu-item" onclick="showToast('Opening hotel visits...')">
+          <div class="pmi-left">
+            <div class="pmi-icon">🏨</div>
+            <span class="pmi-label">Hotel Visits</span>
+          </div>
+          <span class="pmi-arrow">›</span>
+        </div>
+        <div class="profile-menu-item" onclick="showToast('Opening AR viewer...')">
+          <div class="pmi-left">
+            <div class="pmi-icon">✦</div>
+            <span class="pmi-label">AR Room Viewer</span>
+          </div>
+          <span class="pmi-arrow">›</span>
+        </div>
+        <div class="profile-menu-item" onclick="showToast('Opening notifications...')">
+          <div class="pmi-left">
+            <div class="pmi-icon">🔔</div>
+            <span class="pmi-label">Notifications</span>
+          </div>
+          <span class="pmi-arrow">›</span>
+        </div>
+        <div class="profile-menu-item" onclick="showToast('Opening settings...')">
+          <div class="pmi-left">
+            <div class="pmi-icon">⚙️</div>
+            <span class="pmi-label">Settings</span>
+          </div>
+          <span class="pmi-arrow">›</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ BOTTOM TAB BAR ══ -->
+  <div class="tab-bar">
+    <button class="tab-item active" id="tab-home" onclick="switchScreen('screen-home', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span class="tab-label">Discover</span>
+    </button>
+    <button class="tab-item" id="tab-hotels" onclick="switchScreen('screen-hotels', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><rect x="9" y="13" width="6" height="8"/><path d="M8 2h8"/></svg>
+      <span class="tab-label">Hotels</span>
+    </button>
+    <div class="tab-scan" onclick="switchScreen('screen-scan')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+    </div>
+    <button class="tab-item" id="tab-wishlist" onclick="switchScreen('screen-wishlist', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <span class="tab-label">Saved</span>
+    </button>
+    <button class="tab-item" id="tab-profile" onclick="switchScreen('screen-profile', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="tab-label">Profile</span>
+    </button>
+  </div>
+
+  <!-- ══ PRODUCT DETAIL SHEET ══ -->
+  <div class="sheet-backdrop" id="sheetBackdrop" onclick="closeSheet()"></div>
+  <div class="bottom-sheet" id="productSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-img">
+      <div class="sheet-img-bg" id="sheetImgBg" style="background: linear-gradient(145deg, #E8DDD0, #C4B098, #A8907A);"></div>
+    </div>
+    <div class="sheet-body">
+      <div class="sheet-hotel-tag" id="sheetHotel">Rosewood São Paulo</div>
+      <div class="sheet-name" id="sheetName">Linen Armchair</div>
+      <div class="sheet-category" id="sheetCat">Furniture</div>
+      <div class="sheet-price" id="sheetPrice">$2,400</div>
+      <p class="sheet-desc" id="sheetDesc">Handcrafted Belgian linen armchair exclusively from the Rosewood São Paulo Garden Suites. Solid walnut frame.</p>
+      <div class="sheet-divider"></div>
+      <div class="sheet-details">
+        <div class="sheet-detail"><div class="sd-label">Material</div><div class="sd-value">Belgian Linen</div></div>
+        <div class="sheet-detail"><div class="sd-label">Origin</div><div class="sd-value">Portugal</div></div>
+        <div class="sheet-detail"><div class="sd-label">Lead Time</div><div class="sd-value">4–6 weeks</div></div>
+        <div class="sheet-detail"><div class="sd-label">Hotel</div><div class="sd-value" id="sheetDetailHotel">Rosewood SP</div></div>
+      </div>
+    </div>
+    <div class="sheet-actions">
+      <button class="sheet-save-btn" onclick="saveItem()">♡</button>
+      <button class="sheet-add-btn" onclick="addToCartM(); closeSheet()">Add to Bag</button>
+    </div>
+  </div>
+
+  <!-- ══ CART SHEET ══ -->
+  <div class="cart-sheet" id="cartSheet">
+    <div class="sheet-handle"></div>
+    <div class="cart-sheet-head">
+      <div class="cart-sheet-title">Your Bag <span style="font-family:'DM Sans';font-size:13px;color:var(--muted)" id="cartSheetCount">(3)</span></div>
+      <button class="csh-close" onclick="closeCart()">×</button>
+    </div>
+    <div class="cart-sheet-items">
+      <div class="cart-sheet-item">
+        <div class="csi-img csi-1"></div>
+        <div class="csi-info">
+          <div class="csi-name">Linen Armchair</div>
+          <div class="csi-hotel">Rosewood São Paulo</div>
+          <div class="csi-price">$2,400</div>
+        </div>
+        <button class="csi-remove">×</button>
+      </div>
+      <div class="cart-sheet-item">
+        <div class="csi-img csi-2"></div>
+        <div class="csi-info">
+          <div class="csi-name">Brass Table Lamp</div>
+          <div class="csi-hotel">Aman New York</div>
+          <div class="csi-price">$890</div>
+        </div>
+        <button class="csi-remove">×</button>
+      </div>
+      <div class="cart-sheet-item">
+        <div class="csi-img csi-3"></div>
+        <div class="csi-info">
+          <div class="csi-name">Amber Candle</div>
+          <div class="csi-hotel">Rosewood São Paulo</div>
+          <div class="csi-price">$95</div>
+        </div>
+        <button class="csi-remove">×</button>
+      </div>
+    </div>
+    <div class="cart-sheet-foot">
+      <div class="cst-row">
+        <span class="cst-label">Total</span>
+        <span class="cst-val">$3,385</span>
+      </div>
+      <button class="checkout-btn-m" onclick="showToast('Checkout coming soon on iOS & Android!')">Checkout</button>
+    </div>
+  </div>
+
+  <!-- ══ TOAST ══ -->
+  <div class="m-toast" id="mToast">
+    <span class="m-toast-dot"></span>
+    <span id="mToastMsg">Added to bag</span>
+  </div>
+
+</div>
+
+<script>
+let cartCount = 3;
+
+function switchScreen(screenId, tabEl) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+
+  if (tabEl) {
+    document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+    tabEl.classList.add('active');
+  }
+
+  // Close any open sheets
+  closeSheet();
+  closeCart();
+}
+
+function openProductSheet(name, price, hotel, cat, desc, imgClass) {
+  document.getElementById('sheetName').textContent = name;
+  document.getElementById('sheetPrice').textContent = price;
+  document.getElementById('sheetHotel').textContent = hotel;
+  document.getElementById('sheetCat').textContent = cat;
+  document.getElementById('sheetDesc').textContent = desc;
+  document.getElementById('sheetDetailHotel').textContent = hotel;
+
+  // Set image background
+  const imgBg = document.getElementById('sheetImgBg');
+  imgBg.className = 'sheet-img-bg ' + imgClass;
+  imgBg.style.width = '100%';
+  imgBg.style.height = '100%';
+
+  document.getElementById('sheetBackdrop').classList.add('open');
+  document.getElementById('productSheet').classList.add('open');
+}
+
+function closeSheet() {
+  document.getElementById('sheetBackdrop').classList.remove('open');
+  document.getElementById('productSheet').classList.remove('open');
+}
+
+function openCart() {
+  document.getElementById('sheetBackdrop').classList.add('open');
+  document.getElementById('cartSheet').classList.add('open');
+}
+
+function closeCart() {
+  document.getElementById('sheetBackdrop').classList.remove('open');
+  document.getElementById('cartSheet').classList.remove('open');
+}
+
+function addToCartM() {
+  cartCount++;
+  document.getElementById('cartBadge').textContent = cartCount;
+  document.getElementById('cartSheetCount').textContent = '(' + cartCount + ')';
+  showToast('Added to your bag ✓');
+}
+
+function saveItem() {
+  showToast('Saved to wishlist ♡');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('mToast');
+  document.getElementById('mToastMsg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function filterCat(el) {
+  document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  showToast('Filtered: ' + el.textContent);
+}
+
+// Swipe down to close sheets
+let touchStartY = 0;
+['productSheet', 'cartSheet'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; });
+  el.addEventListener('touchend', e => {
+    if (e.changedTouches[0].clientY - touchStartY > 80) {
+      closeSheet(); closeCart();
+    }
+  });
+});
+</script>
+</body>
+</html>

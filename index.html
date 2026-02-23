@@ -10,1117 +10,1061 @@
 <style>
 :root {
   --cream: #F5F0E8;
-  --warm: #FAF7F2;
   --ink: #161210;
   --gold: #C9A96E;
   --gold-lt: #E8D5B0;
-  
-  
+  --gold-dim: rgba(201,169,110,0.15);
+  --gold-border: rgba(201,169,110,0.25);
   --muted: #9A8E82;
   --div: #E8E0D4;
-  --card: #FFFFFF;
-  --safe-top: env(safe-area-inset-top, 44px);
-  --safe-bot: env(safe-area-inset-bottom, 34px);
-  --tab-h: 72px;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{width:100%;max-width:430px;margin:0 auto;height:100vh;overflow:hidden;background:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { width: 100%; max-width: 430px; margin: 0 auto; height: 100vh; overflow: hidden; background: #111; font-family: 'DM Sans', sans-serif; font-weight: 300; -webkit-font-smoothing: antialiased; }
 
-/* ── APP SHELL ── */
-#app{width:100%;height:100vh;position:relative;overflow:hidden;background:var(--cream);}
+/* APP SHELL */
+#app { width: 100%; height: 100vh; position: relative; overflow: hidden; }
 
-/* ── SCREENS ── */
-.screen{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;background:var(--cream);opacity:0;pointer-events:none;transform:translateX(16px);transition:opacity 0.3s ease,transform 0.3s ease;padding-bottom:calc(var(--tab-h) + var(--safe-bot) + 20px);}
-.screen.active{opacity:1;pointer-events:all;transform:translateX(0);}
+/* SCREENS */
+.screen { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; display: none; padding-bottom: 90px; }
+.screen.active { display: block; }
+.screen-light { background: var(--cream); }
+.screen-dark { background: var(--ink); }
 
-/* ── STATUS BAR ── */
-.status-bar{height:calc(var(--safe-top) + 8px);background:transparent;min-height:48px;}
+/* STATUS BAR */
+.sb { height: 50px; flex-shrink: 0; }
 
-/* ── TOP BAR ── */
-.top-bar{display:flex;align-items:center;justify-content:space-between;padding:0 20px 16px;position:sticky;top:0;z-index:50;background:rgba(245,240,232,0.94);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
-.top-bar.dark{background:rgba(22,18,16,0.94);}
-.top-bar-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;letter-spacing:2px;text-transform:uppercase;color:var(--ink);}
-.top-bar-logo span{color:var(--gold);}
-.top-bar-logo.light{color:var(--cream);}
-.top-bar-logo.light span{color:var(--gold);}
-.top-bar-actions{display:flex;gap:14px;align-items:center;}
-.icon-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:none;background:none;cursor:pointer;color:var(--ink);position:relative;}
-.icon-btn.light{color:var(--cream);}
-.icon-btn svg{width:22px;height:22px;}
-.badge{position:absolute;top:2px;right:2px;width:16px;height:16px;background:var(--gold);color:var(--ink);border-radius:50%;font-size:9px;font-weight:500;display:flex;align-items:center;justify-content:center;}
+/* TOP BAR */
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 20px 14px; position: sticky; top: 0; z-index: 50; }
+.topbar-light { background: rgba(245,240,232,0.95); backdrop-filter: blur(12px); }
+.topbar-dark { background: rgba(22,18,16,0.95); backdrop-filter: blur(12px); }
+.logo { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 400; letter-spacing: 2.5px; text-transform: uppercase; }
+.logo-dark { color: var(--ink); }
+.logo-light { color: var(--cream); }
+.logo span { color: var(--gold); }
+.top-btns { display: flex; gap: 12px; align-items: center; }
+.ibtn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: none; background: none; cursor: pointer; position: relative; }
+.ibtn svg { width: 22px; height: 22px; }
+.ibtn-dark svg { color: var(--ink); }
+.ibtn-light svg { color: var(--cream); }
+.badge { position: absolute; top: 1px; right: 1px; width: 17px; height: 17px; background: var(--gold); color: var(--ink); border-radius: 50%; font-size: 9px; font-weight: 600; display: flex; align-items: center; justify-content: center; }
 
-/* ── BOTTOM TAB BAR ── */
-.tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:calc(var(--tab-h) + var(--safe-bot));background:rgba(22,18,16,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(201,169,110,0.2);display:flex;align-items:flex-start;justify-content:space-around;padding-top:10px;z-index:100;}
-.tab-item{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;cursor:pointer;border:none;background:none;padding:4px 0;transition:all 0.2s;color:rgba(245,240,232,0.3);}
-.tab-item.active{color:var(--gold);}
-.tab-item svg{width:22px;height:22px;transition:transform 0.2s;}
-.tab-item.active svg{transform:scale(1.1);}
-.tab-label{font-size:9px;letter-spacing:1px;text-transform:uppercase;font-weight:400;}
-.tab-scan-btn{width:54px;height:54px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:-22px;border:3px solid var(--ink);box-shadow:0 4px 24px rgba(201,169,110,0.35);transition:all 0.2s;cursor:pointer;}
-.tab-scan-btn:active{transform:scale(0.95);}
-.tab-scan-btn svg{width:22px;height:22px;color:var(--ink);}
+/* TAB BAR */
+.tabbar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; height: 70px; background: rgba(22,18,16,0.97); backdrop-filter: blur(16px); border-top: 1px solid var(--gold-border); display: flex; align-items: flex-start; justify-content: space-around; padding-top: 10px; z-index: 100; }
+.tab { display: flex; flex-direction: column; align-items: center; gap: 3px; flex: 1; cursor: pointer; border: none; background: none; color: rgba(245,240,232,0.3); transition: color 0.2s; padding: 2px 0; }
+.tab.active { color: var(--gold); }
+.tab svg { width: 21px; height: 21px; }
+.tab span { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; font-family: 'DM Sans', sans-serif; }
+.scan-tab { width: 52px; height: 52px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: -20px; border: 3px solid var(--ink); box-shadow: 0 4px 20px rgba(201,169,110,0.4); cursor: pointer; flex-shrink: 0; }
+.scan-tab svg { width: 21px; height: 21px; color: var(--ink); }
 
-/* ── SHARED COMPONENTS ── */
-.sec-head{display:flex;align-items:center;justify-content:space-between;padding:0 20px;margin-bottom:14px;}
-.sec-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;}
-.sec-more{font-size:11px;letter-spacing:1px;color:var(--gold);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
-.h-scroll{display:flex;gap:12px;overflow-x:auto;padding:0 20px 4px;scrollbar-width:none;-ms-overflow-style:none;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;}
-.h-scroll::-webkit-scrollbar{display:none;}
-.cat-chips{display:flex;gap:8px;overflow-x:auto;padding:0 20px 4px;scrollbar-width:none;}
-.cat-chips::-webkit-scrollbar{display:none;}
-.cat-chip{flex-shrink:0;padding:8px 16px;border-radius:20px;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:1px solid var(--div);background:white;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all 0.2s;white-space:nowrap;}
-.cat-chip.active,.cat-chip:active{background:var(--ink);color:var(--cream);border-color:var(--ink);}
-.mb-20{margin-bottom:20px;}
-.mb-24{margin-bottom:24px;}
-.mb-32{margin-bottom:32px;}
-.mt-8{margin-top:8px;}
-.px-20{padding:0 20px;}
+/* TOAST */
+.toast { position: fixed; bottom: 82px; left: 50%; transform: translateX(-50%) translateY(16px); background: var(--ink); color: var(--cream); padding: 11px 18px; border-radius: 24px; font-size: 12px; letter-spacing: 0.5px; z-index: 999; opacity: 0; transition: all 0.3s ease; white-space: nowrap; display: flex; align-items: center; gap: 8px; border: 1px solid var(--gold-border); pointer-events: none; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
 
-/* ── TOAST ── */
-.m-toast{position:fixed;bottom:calc(var(--tab-h) + var(--safe-bot) + 16px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--cream);padding:12px 20px;border-radius:24px;font-size:12px;letter-spacing:1px;z-index:500;opacity:0;transition:all 0.35s cubic-bezier(0.4,0,0.2,1);white-space:nowrap;display:flex;align-items:center;gap:8px;border:1px solid rgba(201,169,110,0.3);}
-.m-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-.m-toast-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);}
+/* BACKDROP + SHEETS */
+.backdrop { position: fixed; inset: 0; background: rgba(16,10,6,0.7); z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.backdrop.open { opacity: 1; pointer-events: all; }
+.sheet { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%); width: 100%; max-width: 430px; background: #FAF7F2; border-radius: 22px 22px 0 0; z-index: 201; transition: transform 0.38s cubic-bezier(0.4,0,0.2,1); max-height: 90vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.sheet.open { transform: translateX(-50%) translateY(0); }
+.sheet-dark { background: var(--ink); border: 1px solid var(--gold-border); border-bottom: none; }
+.handle { width: 36px; height: 4px; background: var(--div); border-radius: 2px; margin: 12px auto 6px; }
+.handle-dark { background: rgba(245,240,232,0.2); }
 
-/* ═══════════════════════════
-   SCREEN: DISCOVER
-═══════════════════════════ */
-.hero-card{margin:0 16px 16px;border-radius:20px;overflow:hidden;height:380px;position:relative;background:linear-gradient(145deg,#2C2018 0%,#4A3525 40%,#3D2E1E 70%,#1E1410 100%);cursor:pointer;}
-.hero-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 30%,rgba(201,169,110,0.2) 0%,transparent 60%),radial-gradient(ellipse at 70% 70%,rgba(201,169,110,0.1) 0%,transparent 50%);}
-.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(16,10,6,0.92) 0%,transparent 55%);display:flex;flex-direction:column;justify-content:flex-end;padding:24px;}
-.hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(139,0,0,0.3);border:1px solid rgba(139,0,0,0.5);padding:5px 12px;border-radius:20px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#E88080;margin-bottom:12px;width:fit-content;}
-.hero-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);}
-.hero-card h2{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;color:var(--cream);line-height:1.1;margin-bottom:6px;}
-.hero-sub{font-size:12px;color:rgba(245,240,232,0.6);margin-bottom:16px;}
-.hero-btn{display:flex;align-items:center;justify-content:space-between;background:rgba(245,240,232,0.08);border:1px solid rgba(245,240,232,0.2);border-radius:10px;padding:12px 16px;color:var(--cream);font-size:12px;letter-spacing:1px;}
-.hero-btn span{color:var(--gold);font-size:18px;}
-.hero-dots{display:flex;gap:6px;justify-content:center;margin-bottom:20px;}
-.hero-dot-ind{width:6px;height:6px;border-radius:3px;background:var(--div);transition:all 0.3s;}
-.hero-dot-ind.active{width:20px;background:var(--gold);}
+/* ─── DISCOVER SCREEN ─── */
+.hero { margin: 0 16px 14px; border-radius: 20px; height: 350px; position: relative; overflow: hidden; cursor: pointer; background: linear-gradient(145deg, #2C2018, #4A3525, #1E1410); }
+.hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 35% 30%, rgba(201,169,110,0.18) 0%, transparent 60%); }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(16,10,6,0.92) 0%, transparent 55%); padding: 22px; display: flex; flex-direction: column; justify-content: flex-end; }
+.hero-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(201,169,110,0.15); border: 1px solid rgba(201,169,110,0.35); padding: 4px 12px; border-radius: 20px; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-lt); margin-bottom: 10px; width: fit-content; }
+.hero h2 { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 300; color: var(--cream); line-height: 1.1; margin-bottom: 5px; }
+.hero-sub { font-size: 12px; color: rgba(245,240,232,0.6); margin-bottom: 14px; }
+.hero-cta { display: flex; align-items: center; justify-content: space-between; background: rgba(245,240,232,0.08); border: 1px solid rgba(245,240,232,0.18); border-radius: 10px; padding: 11px 15px; color: var(--cream); font-size: 12px; letter-spacing: 1px; }
+.hero-cta span { color: var(--gold); font-size: 18px; }
 
-/* Hotel pills */
-.hotel-pill{flex-shrink:0;width:155px;border-radius:14px;overflow:hidden;scroll-snap-align:start;cursor:pointer;position:relative;}
-.hotel-pill-img{height:105px;position:relative;}
-.hp-1{background:linear-gradient(145deg,#1E2D33 0%,#3D5058 50%,#1A2830 100%);}
-.hp-2{background:linear-gradient(145deg,#2A2820 0%,#4A3D2E 50%,#231E18 100%);}
-.hp-3{background:linear-gradient(145deg,#1A2820 0%,#2E4535 50%,#152018 100%);}
-.hp-4{background:linear-gradient(145deg,#3D2E1E 0%,#6B4E35 50%,#2A1E10 100%);}
-.hp-5{background:linear-gradient(145deg,#2A2A2E 0%,#3D3D50 50%,#1E1E28 100%);}
-.hotel-pill-img::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 40% 30%,rgba(201,169,110,0.15) 0%,transparent 70%);}
-.hotel-pill-info{background:white;padding:10px 12px;}
-.hotel-pill-name{font-family:'Cormorant Garamond',serif;font-size:14px;line-height:1.2;margin-bottom:2px;}
-.hotel-pill-loc{font-size:10px;color:var(--muted);}
+.sec-head { display: flex; align-items: center; justify-content: space-between; padding: 0 20px; margin-bottom: 12px; }
+.sec-title { font-family: 'Cormorant Garamond', serif; font-size: 21px; font-weight: 400; color: var(--ink); }
+.sec-more { font-size: 11px; letter-spacing: 1px; color: var(--gold); background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; }
 
-/* Product grid */
-.prod-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:0 16px;margin-top:4px;}
-.prod-card{border-radius:12px;overflow:hidden;background:white;cursor:pointer;transition:transform 0.2s;}
-.prod-card:active{transform:scale(0.97);}
-.prod-card-img{aspect-ratio:3/4;position:relative;}
-.pc-1{background:linear-gradient(145deg,#E8DDD0,#C4B098,#A8907A);}
-.pc-2{background:linear-gradient(145deg,#2A3540,#3D5060,#1E2D38);}
-.pc-3{background:linear-gradient(145deg,#F0EAE0,#D8CCBC,#C0B0A0);}
-.pc-4{background:linear-gradient(145deg,#1A1A1A,#2D2D2D,#151515);}
-.pc-5{background:linear-gradient(145deg,#3D2820,#6B3D28,#2E1E15);}
-.pc-6{background:linear-gradient(145deg,#E0D8CC,#C8BCAC,#B0A090);}
-.prod-card-img::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 25%,rgba(255,255,255,0.15) 0%,transparent 70%);}
-.prod-tag{position:absolute;top:10px;left:10px;padding:3px 8px;border-radius:4px;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;font-weight:500;z-index:1;}
-.prod-tag.new{background:var(--gold);color:var(--ink);}
-.prod-tag.exc{background:var(--gold);color:var(--ink);}
-.prod-save{position:absolute;top:10px;right:10px;width:28px;height:28px;background:rgba(255,255,255,0.9);border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;z-index:1;}
-.prod-card-info{padding:10px 12px 14px;}
-.prod-card-cat{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
-.prod-card-name{font-family:'Cormorant Garamond',serif;font-size:15px;line-height:1.2;margin-bottom:2px;}
-.prod-card-hotel{font-size:10px;color:var(--muted);margin-bottom:8px;}
-.prod-card-foot{display:flex;align-items:center;justify-content:space-between;}
-.prod-card-price{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;}
-.prod-add-btn{width:28px;height:28px;background:var(--ink);color:var(--cream);border:none;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:background 0.2s;}
-.prod-add-btn:active{background:var(--gold);}
+.hscroll { display: flex; gap: 11px; overflow-x: auto; padding: 0 20px 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.hscroll::-webkit-scrollbar { display: none; }
 
-/* ═══════════════════════════
-   SCREEN: SCAN (5-STEP FLOW)
-═══════════════════════════ */
-#screen-scan{background:var(--ink);}
+.hotel-pill { flex-shrink: 0; width: 150px; border-radius: 13px; overflow: hidden; cursor: pointer; background: white; }
+.hotel-pill-img { height: 100px; }
+.hi-1 { background: linear-gradient(145deg, #1E2D33, #3D5058); }
+.hi-2 { background: linear-gradient(145deg, #2A2820, #4A3D2E); }
+.hi-3 { background: linear-gradient(145deg, #1A2820, #2E4535); }
+.hi-4 { background: linear-gradient(145deg, #3D2E1E, #6B4E35); }
+.hi-5 { background: linear-gradient(145deg, #2A2A2E, #3D3D50); }
+.hotel-pill-img::before { content: ''; display: block; width: 100%; height: 100%; background: radial-gradient(ellipse at 40% 30%, rgba(201,169,110,0.15) 0%, transparent 70%); }
+.hotel-pill-info { padding: 9px 11px; }
+.hotel-pill-name { font-family: 'Cormorant Garamond', serif; font-size: 14px; line-height: 1.2; margin-bottom: 2px; color: var(--ink); }
+.hotel-pill-loc { font-size: 10px; color: var(--muted); }
 
-/* Step indicator */
-.scan-steps-nav{display:flex;align-items:center;justify-content:center;gap:0;padding:12px 20px 20px;}
-.step-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;letter-spacing:0.5px;transition:all 0.3s;border:1px solid rgba(201,169,110,0.3);color:rgba(245,240,232,0.3);background:transparent;cursor:pointer;}
-.step-dot.active{background:var(--gold);color:var(--ink);border-color:var(--gold);}
-.step-dot.done{background:rgba(201,169,110,0.2);color:var(--gold);border-color:var(--gold);}
-.step-line{flex:1;height:1px;background:rgba(201,169,110,0.2);margin:0 4px;}
-.step-line.done{background:var(--gold);}
+.chips { display: flex; gap: 8px; overflow-x: auto; padding: 0 20px 4px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip { flex-shrink: 0; padding: 7px 15px; border-radius: 20px; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; border: 1px solid var(--div); background: white; color: var(--muted); font-family: 'DM Sans', sans-serif; transition: all 0.2s; white-space: nowrap; }
+.chip.active { background: var(--ink); color: var(--cream); border-color: var(--ink); }
 
-/* Step panels */
-.scan-step-panel{display:none;animation:fadeIn 0.3s ease;}
-.scan-step-panel.active{display:block;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.prod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 0 16px; }
+.prod-card { border-radius: 12px; overflow: hidden; background: white; cursor: pointer; }
+.prod-card-img { aspect-ratio: 3/4; position: relative; }
+.pi-1 { background: linear-gradient(145deg, #E8DDD0, #C4B098, #A8907A); }
+.pi-2 { background: linear-gradient(145deg, #2A3540, #3D5060, #1E2D38); }
+.pi-3 { background: linear-gradient(145deg, #F0EAE0, #D8CCBC, #C0B0A0); }
+.pi-4 { background: linear-gradient(145deg, #1A1A1A, #2D2D2D, #151515); }
+.pi-5 { background: linear-gradient(145deg, #3D2820, #6B3D28, #2E1E15); }
+.pi-6 { background: linear-gradient(145deg, #E0D8CC, #C8BCAC, #B0A090); }
+.prod-tag { position: absolute; top: 9px; left: 9px; padding: 3px 7px; border-radius: 4px; font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 500; }
+.tag-new { background: var(--gold); color: var(--ink); }
+.tag-exc { background: var(--ink); color: var(--gold-lt); }
+.prod-save { position: absolute; top: 9px; right: 9px; width: 28px; height: 28px; background: rgba(255,255,255,0.9); border-radius: 50%; border: none; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+.prod-card-info { padding: 10px 11px 13px; }
+.prod-cat { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+.prod-name { font-family: 'Cormorant Garamond', serif; font-size: 15px; line-height: 1.2; color: var(--ink); margin-bottom: 2px; }
+.prod-hotel-tag { font-size: 10px; color: var(--muted); margin-bottom: 7px; }
+.prod-foot { display: flex; align-items: center; justify-content: space-between; }
+.prod-price { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 300; color: var(--ink); }
+.prod-add { width: 28px; height: 28px; background: var(--ink); color: var(--cream); border: none; border-radius: 7px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
 
-/* STEP 1 — Camera */
-.scan-header{padding:0 20px 20px;}
-.scan-step-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
-.scan-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--cream);line-height:1.2;margin-bottom:6px;}
-.scan-sub{font-size:12px;color:rgba(245,240,232,0.5);line-height:1.7;}
-.viewfinder{margin:0 20px;border-radius:20px;overflow:hidden;position:relative;background:linear-gradient(145deg,#3D2E1E 0%,#6B4E35 40%,#4A3525 70%,#2E1E10 100%);aspect-ratio:3/4;}
-.viewfinder::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 40% 35%,rgba(201,169,110,0.18) 0%,transparent 60%);}
-.vf-corner{position:absolute;width:28px;height:28px;border-color:var(--gold);border-style:solid;border-width:0;border-radius:2px;}
-.vf-corner.tl{top:16px;left:16px;border-top-width:2px;border-left-width:2px;}
-.vf-corner.tr{top:16px;right:16px;border-top-width:2px;border-right-width:2px;}
-.vf-corner.bl{bottom:16px;left:16px;border-bottom-width:2px;border-left-width:2px;}
-.vf-corner.br{bottom:16px;right:16px;border-bottom-width:2px;border-right-width:2px;}
-.vf-scan-line{position:absolute;left:16px;right:16px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);animation:vfScan 2.5s ease-in-out infinite;}
-@keyframes vfScan{0%{top:16px;opacity:0;}10%{opacity:1;}90%{opacity:1;}100%{top:calc(100% - 16px);opacity:0;}}
-.vf-hotspot{position:absolute;width:36px;height:36px;border:1.5px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;animation:pulse 2s ease-in-out infinite;}
-.vf-hotspot::after{content:'';width:8px;height:8px;background:var(--gold);border-radius:50%;}
-.vf-h1{top:30%;left:18%;animation-delay:0s;}
-.vf-h2{top:20%;right:22%;animation-delay:0.5s;}
-.vf-h3{bottom:38%;left:48%;animation-delay:1s;}
-@keyframes spin{to{transform:rotate(360deg);}}
-@keyframes pulse{0%,100%{transform:scale(1);opacity:0.8;}50%{transform:scale(1.15);opacity:1;}}
-.cam-btns{display:flex;gap:10px;margin:14px 20px 0;}
-.cam-btn{flex:1;padding:15px;border-radius:14px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:400;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
-.cam-btn:active{transform:scale(0.97);}
-.cam-btn.primary{background:var(--gold);color:var(--ink);}
-.cam-btn.secondary{background:rgba(245,240,232,0.08);border:1px solid rgba(245,240,232,0.2);color:var(--cream);}
-.cam-btn svg{width:16px;height:16px;}
+/* ─── SCAN SCREEN ─── */
+.step-nav { display: flex; align-items: center; padding: 8px 20px 16px; }
+.sdot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; border: 1px solid rgba(201,169,110,0.25); color: rgba(245,240,232,0.3); background: transparent; cursor: pointer; flex-shrink: 0; transition: all 0.25s; }
+.sdot.active { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+.sdot.done { background: var(--gold-dim); color: var(--gold); border-color: var(--gold); }
+.sline { flex: 1; height: 1px; background: rgba(201,169,110,0.15); margin: 0 3px; }
+.sline.done { background: var(--gold); }
+.step-panel { display: none; }
+.step-panel.active { display: block; }
 
-/* STEP 2 — Identify results */
-.identify-img{margin:0 20px;border-radius:16px;overflow:hidden;height:200px;position:relative;background:linear-gradient(145deg,#3D2E1E,#6B4E35,#4A3525);}
-.identify-img::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 35% 30%,rgba(201,169,110,0.2) 0%,transparent 60%);}
-.identify-badge{position:absolute;top:14px;left:14px;background:rgba(22,18,16,0.85);border:1px solid rgba(201,169,110,0.4);backdrop-filter:blur(8px);padding:6px 14px;border-radius:20px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);}
-.identify-hotspot{position:absolute;width:32px;height:32px;border:1.5px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(201,169,110,0.15);cursor:pointer;backdrop-filter:blur(4px);}
-.identify-hotspot::after{content:'';width:7px;height:7px;background:var(--gold);border-radius:50%;}
-.ih-1{top:28%;left:22%;}
-.ih-2{top:18%;right:25%;}
-.ih-3{bottom:30%;left:50%;}
-.identified-items{padding:16px 20px 0;}
-.identified-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
-.identified-item{display:flex;align-items:center;gap:14px;padding:12px;background:var(--ink);border:1px solid rgba(201,169,110,0.15);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:border-color 0.2s;}
-.identified-item:active{border-color:var(--gold);}
-.ii-swatch{width:48px;height:48px;border-radius:8px;flex-shrink:0;}
-.is-1{background:linear-gradient(135deg,#8B6E52,#6B4E35);}
-.is-2{background:linear-gradient(135deg,#C4A882,#A08060);}
-.is-3{background:linear-gradient(135deg,#3D3028,#2A2018);}
-.ii-info{flex:1;}
-.ii-name{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--cream);margin-bottom:2px;}
-.ii-brand{font-size:10px;color:var(--muted);margin-bottom:4px;}
-.ii-price{font-size:14px;color:var(--gold);font-family:'Cormorant Garamond',serif;}
-.ii-check{width:22px;height:22px;border:1.5px solid rgba(201,169,110,0.4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;transition:all 0.2s;}
-.ii-check.checked{background:var(--gold);border-color:var(--gold);color:var(--ink);}
+.step-head { padding: 0 20px 16px; }
+.step-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 5px; }
+.step-title { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300; color: var(--cream); line-height: 1.2; margin-bottom: 5px; }
+.step-sub { font-size: 12px; color: rgba(245,240,232,0.5); line-height: 1.7; }
 
-/* STEP 3 — Looks for Less */
-.looks-header{padding:0 20px 16px;}
-.lfl-product{margin:0 20px 16px;background:var(--ink);border:1px solid rgba(201,169,110,0.2);border-radius:16px;padding:16px;display:flex;gap:14px;align-items:center;}
-.lfl-img{width:80px;height:80px;border-radius:10px;flex-shrink:0;}
-.lfl-info{flex:1;}
-.lfl-name{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--cream);margin-bottom:4px;}
-.lfl-hotel{font-size:10px;color:var(--muted);margin-bottom:6px;}
-.lfl-price-orig{font-size:20px;color:var(--gold);font-family:'Cormorant Garamond',serif;}
-.lfl-section-title{padding:0 20px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(245,240,232,0.5);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
-.lfl-section-title::after{content:'';flex:1;height:1px;background:rgba(245,240,232,0.1);}
-.lfl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 20px;}
-.lfl-item{background:rgba(245,240,232,0.05);border:1px solid rgba(245,240,232,0.1);border-radius:12px;overflow:hidden;cursor:pointer;transition:all 0.2s;}
-.lfl-item:active{border-color:var(--gold);}
-.lfl-item-img{height:100px;}
-.lfl-i1{background:linear-gradient(135deg,#E8DDD0,#C4B098);}
-.lfl-i2{background:linear-gradient(135deg,#D0C8BC,#B8ACAA);}
-.lfl-i3{background:linear-gradient(135deg,#C8C0B4,#ACA498);}
-.lfl-i4{background:linear-gradient(135deg,#E0D4C8,#C4B8A8);}
-.lfl-item-info{padding:10px 10px 12px;}
-.lfl-item-name{font-size:11px;color:rgba(245,240,232,0.8);margin-bottom:4px;}
-.lfl-item-price{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--gold);}
-.lfl-item-save{font-size:9px;color:#4CAF50;letter-spacing:0.5px;}
+.viewfinder { margin: 0 20px; border-radius: 18px; overflow: hidden; position: relative; aspect-ratio: 3/4; background: linear-gradient(145deg, #3D2E1E, #6B4E35, #2E1E10); }
+.vf-corner { position: absolute; width: 26px; height: 26px; border-color: var(--gold); border-style: solid; border-width: 0; }
+.tl { top: 14px; left: 14px; border-top-width: 2px; border-left-width: 2px; border-radius: 2px 0 0 0; }
+.tr { top: 14px; right: 14px; border-top-width: 2px; border-right-width: 2px; border-radius: 0 2px 0 0; }
+.bl { bottom: 14px; left: 14px; border-bottom-width: 2px; border-left-width: 2px; border-radius: 0 0 0 2px; }
+.br { bottom: 14px; right: 14px; border-bottom-width: 2px; border-right-width: 2px; border-radius: 0 0 2px 0; }
+.scan-line { position: absolute; left: 14px; right: 14px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); animation: scanDown 2.5s ease-in-out infinite; }
+@keyframes scanDown { 0% { top: 14px; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: calc(100% - 14px); opacity: 0; } }
+.vf-spot { position: absolute; width: 32px; height: 32px; border: 1.5px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; animation: spotPulse 2s ease-in-out infinite; }
+.vf-spot::after { content: ''; width: 8px; height: 8px; background: var(--gold); border-radius: 50%; }
+@keyframes spotPulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.15); opacity: 1; } }
+.ai-spin { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.fade-up { animation: fadeUp 0.3s ease; }
 
-/* STEP 4 — Complete the Look */
-.ctl-header{padding:0 20px 16px;}
-.ctl-selected{margin:0 20px 16px;background:var(--ink);border:1px solid rgba(201,169,110,0.2);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:10px;}
-.ctl-selected-img{width:44px;height:44px;border-radius:8px;flex-shrink:0;}
-.ctl-selected-name{font-size:12px;color:var(--cream);flex:1;}
-.ctl-selected-price{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--gold);}
-.ctl-section{padding:0 20px;margin-bottom:20px;}
-.ctl-section-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(245,240,232,0.4);margin-bottom:12px;}
-.ctl-items-row{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;}
-.ctl-items-row::-webkit-scrollbar{display:none;}
-.ctl-item{flex-shrink:0;width:130px;background:rgba(245,240,232,0.05);border:1px solid rgba(245,240,232,0.1);border-radius:12px;overflow:hidden;cursor:pointer;transition:all 0.2s;}
-.ctl-item.selected{border-color:var(--gold);}
-.ctl-item:active{border-color:var(--gold);}
-.ctl-item-img{height:90px;}
-.ci-1{background:linear-gradient(135deg,#2A3540,#3D5060);}
-.ci-2{background:linear-gradient(135deg,#3D2820,#6B3D28);}
-.ci-3{background:linear-gradient(135deg,#E0D8CC,#C8BCAC);}
-.ci-4{background:linear-gradient(135deg,#1A1A1A,#2D2D2D);}
-.ci-5{background:linear-gradient(135deg,#1A2820,#2E4535);}
-.ci-6{background:linear-gradient(135deg,#3D3528,#5C5040);}
-.ctl-item-info{padding:8px 10px 10px;}
-.ctl-item-name{font-size:10px;color:rgba(245,240,232,0.7);margin-bottom:3px;line-height:1.3;}
-.ctl-item-price{font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--gold);}
-.ctl-item-add{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--gold);margin-top:4px;}
-.ctl-item.selected .ctl-item-add{color:var(--gold);}
-.cart-summary-bar{margin:0 20px;background:var(--ink);border:1px solid rgba(201,169,110,0.3);border-radius:16px;padding:16px;}
-.csb-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
-.csb-items{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
-.csb-item{display:flex;justify-content:space-between;align-items:center;}
-.csb-item-name{font-size:12px;color:rgba(245,240,232,0.7);}
-.csb-item-price{font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--cream);}
-.csb-divider{height:1px;background:rgba(201,169,110,0.15);margin-bottom:10px;}
-.csb-total{display:flex;justify-content:space-between;align-items:center;}
-.csb-total-label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
-.csb-total-val{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--gold);}
+.cam-btns { display: flex; gap: 10px; margin: 12px 20px 0; }
+.cam-btn { flex: 1; padding: 14px; border-radius: 13px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 7px; transition: opacity 0.2s; }
+.cam-btn:active { opacity: 0.8; }
+.cam-gold { background: var(--gold); color: var(--ink); font-weight: 500; }
+.cam-ghost { background: rgba(245,240,232,0.07); border: 1px solid rgba(245,240,232,0.18); color: var(--cream); }
+.cam-btn svg { width: 15px; height: 15px; }
 
-/* STEP 5 — Checkout */
-.checkout-wrap{padding:0 20px;}
-.checkout-section{margin-bottom:20px;}
-.co-section-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
-.co-row{display:flex;align-items:center;justify-content:space-between;background:rgba(245,240,232,0.06);border:1px solid rgba(245,240,232,0.1);border-radius:12px;padding:14px 16px;margin-bottom:8px;cursor:pointer;transition:border-color 0.2s;}
-.co-row:active{border-color:var(--gold);}
-.co-row-left{display:flex;align-items:center;gap:12px;}
-.co-row-icon{width:36px;height:36px;background:rgba(201,169,110,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;}
-.co-row-text{}
-.co-row-label{font-size:11px;color:rgba(245,240,232,0.4);letter-spacing:0.5px;}
-.co-row-value{font-size:13px;color:var(--cream);font-weight:400;}
-.co-row-arrow{color:var(--muted);font-size:18px;}
-.co-order-items{background:rgba(245,240,232,0.04);border:1px solid rgba(245,240,232,0.08);border-radius:12px;overflow:hidden;margin-bottom:8px;}
-.co-order-item{display:flex;gap:12px;padding:12px 14px;border-bottom:1px solid rgba(245,240,232,0.06);align-items:center;}
-.co-order-item:last-child{border-bottom:none;}
-.co-item-img{width:52px;height:52px;border-radius:8px;flex-shrink:0;}
-.coi-1{background:linear-gradient(135deg,#8B6E52,#6B4E35);}
-.coi-2{background:linear-gradient(135deg,#2A3540,#3D5060);}
-.coi-3{background:linear-gradient(135deg,#E0D8CC,#C8BCAC);}
-.co-item-info{flex:1;}
-.co-item-name{font-size:13px;color:var(--cream);font-weight:400;margin-bottom:2px;}
-.co-item-hotel{font-size:10px;color:var(--muted);}
-.co-item-price{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--gold);}
-.co-totals{background:rgba(245,240,232,0.04);border:1px solid rgba(245,240,232,0.08);border-radius:12px;padding:14px;}
-.co-total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
-.co-total-row:last-child{margin-bottom:0;padding-top:10px;border-top:1px solid rgba(245,240,232,0.1);}
-.co-total-label{font-size:12px;color:var(--muted);}
-.co-total-val{font-size:13px;color:var(--cream);}
-.co-total-row:last-child .co-total-label{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:rgba(245,240,232,0.6);}
-.co-total-row:last-child .co-total-val{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--gold);}
-.co-submit-btn{width:100%;padding:18px;background:var(--gold);color:var(--ink);border:none;border-radius:14px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:400;transition:all 0.2s;margin-top:16px;margin-bottom:4px;}
-.co-submit-btn:active{background:var(--gold);transform:scale(0.98);}
-.co-guest-link{text-align:center;font-size:11px;color:var(--muted);cursor:pointer;}
-.co-guest-link span{color:var(--gold);}
+.next-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: calc(100% - 40px); margin: 14px 20px 0; padding: 16px; background: var(--gold); color: var(--ink); border: none; border-radius: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; font-weight: 500; transition: opacity 0.2s; }
+.next-btn:active { opacity: 0.85; }
+.next-btn svg { width: 15px; height: 15px; }
+.back-link { display: block; text-align: center; font-size: 11px; color: rgba(245,240,232,0.35); cursor: pointer; padding: 11px 0; }
 
-/* Next step buttons */
-.scan-next-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:calc(100% - 40px);margin:16px 20px 0;padding:16px;background:var(--gold);color:var(--ink);border:none;border-radius:14px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;transition:all 0.2s;}
-.scan-next-btn:active{transform:scale(0.98);background:var(--gold);}
-.scan-next-btn svg{width:16px;height:16px;}
-.scan-back-link{text-align:center;font-size:11px;color:rgba(245,240,232,0.4);cursor:pointer;padding:10px 0;display:block;}
+.id-img { margin: 0 20px; border-radius: 14px; overflow: hidden; height: 185px; position: relative; background: linear-gradient(145deg, #3D2E1E, #6B4E35); }
+.id-badge { position: absolute; top: 12px; left: 12px; background: rgba(22,18,16,0.85); border: 1px solid var(--gold-border); backdrop-filter: blur(8px); padding: 5px 12px; border-radius: 20px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); }
+.id-spot { position: absolute; width: 28px; height: 28px; border: 1.5px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(201,169,110,0.15); cursor: pointer; }
+.id-spot::after { content: ''; width: 7px; height: 7px; background: var(--gold); border-radius: 50%; }
 
-/* Order success */
-.order-success{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 32px;text-align:center;}
-.success-icon{width:72px;height:72px;background:rgba(139,0,0,0.2);border:2px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:24px;animation:successPop 0.5s cubic-bezier(0.4,0,0.2,1);}
-@keyframes successPop{from{transform:scale(0);}to{transform:scale(1);}}
-.success-title{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:var(--cream);margin-bottom:10px;}
-.success-sub{font-size:13px;color:rgba(245,240,232,0.5);line-height:1.7;margin-bottom:32px;}
-.success-order-num{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
-.success-num{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--cream);margin-bottom:32px;}
-.success-btn{width:100%;padding:16px;background:var(--gold);color:var(--ink);border:none;border-radius:14px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;}
+.id-list { padding: 14px 20px 0; }
+.id-list-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+.id-item { display: flex; align-items: center; gap: 12px; padding: 11px; background: rgba(245,240,232,0.04); border: 1px solid rgba(201,169,110,0.12); border-radius: 11px; margin-bottom: 8px; cursor: pointer; }
+.id-swatch { width: 46px; height: 46px; border-radius: 8px; flex-shrink: 0; }
+.sw-1 { background: linear-gradient(135deg, #8B6E52, #6B4E35); }
+.sw-2 { background: linear-gradient(135deg, #C4A882, #A08060); }
+.sw-3 { background: linear-gradient(135deg, #3D3028, #2A2018); }
+.id-info { flex: 1; }
+.id-name { font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--cream); margin-bottom: 2px; }
+.id-brand { font-size: 10px; color: var(--muted); margin-bottom: 3px; }
+.id-price { font-family: 'Cormorant Garamond', serif; font-size: 14px; color: var(--gold); }
+.id-check { width: 22px; height: 22px; border: 1.5px solid rgba(201,169,110,0.35); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; color: transparent; transition: all 0.2s; flex-shrink: 0; }
+.id-check.on { background: var(--gold); border-color: var(--gold); color: var(--ink); }
 
-/* ═══════════════════════════
-   SCREEN: HOTELS
-═══════════════════════════ */
-.hotels-list{display:flex;flex-direction:column;gap:2px;padding:0 16px;}
-.hotel-full-card{border-radius:16px;overflow:hidden;position:relative;height:200px;cursor:pointer;transition:transform 0.2s;margin-bottom:12px;}
-.hotel-full-card:active{transform:scale(0.98);}
-.hfc-1{background:linear-gradient(135deg,#2C2018,#4A3525,#3D2E1E);}
-.hfc-2{background:linear-gradient(135deg,#1E2D33,#3D5058,#1A2830);}
-.hfc-3{background:linear-gradient(135deg,#2A2A2A,#3D3D3D,#252525);}
-.hfc-4{background:linear-gradient(135deg,#1A2820,#2E4535,#152018);}
-.hfc-5{background:linear-gradient(135deg,#2A2820,#4A3D2E,#231E18);}
-.hotel-full-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 35% 35%,rgba(201,169,110,0.15) 0%,transparent 60%);}
-.hfc-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(16,10,6,0.9) 0%,transparent 55%);padding:18px;display:flex;flex-direction:column;justify-content:flex-end;}
-.hfc-badge{position:absolute;top:14px;left:14px;background:var(--gold);color:var(--ink);font-size:8px;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border-radius:4px;font-weight:500;}
-.hfc-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--cream);margin-bottom:3px;}
-.hfc-loc{font-size:10px;color:rgba(245,240,232,0.6);margin-bottom:10px;}
-.hfc-foot{display:flex;align-items:center;justify-content:space-between;}
-.hfc-count{font-size:11px;letter-spacing:1px;color:var(--gold-lt);}
-.hfc-arrow{width:30px;height:30px;background:rgba(245,240,232,0.12);border:1px solid rgba(245,240,232,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--cream);font-size:14px;}
+.lfl-orig { margin: 0 20px 12px; background: rgba(245,240,232,0.05); border: 1px solid var(--gold-border); border-radius: 13px; padding: 13px; display: flex; gap: 13px; align-items: center; }
+.lfl-orig-img { width: 70px; height: 70px; border-radius: 9px; flex-shrink: 0; }
+.lfl-orig-name { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: var(--cream); margin-bottom: 2px; }
+.lfl-orig-hotel { font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+.lfl-orig-price { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--gold); }
+.lfl-section-title { padding: 0 20px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(245,240,232,0.4); margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+.lfl-section-title::after { content: ''; flex: 1; height: 1px; background: rgba(245,240,232,0.08); }
+.lfl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 20px; }
+.lfl-card { background: rgba(245,240,232,0.04); border: 1px solid rgba(245,240,232,0.08); border-radius: 11px; overflow: hidden; cursor: pointer; transition: border-color 0.2s; }
+.lfl-card:active { border-color: var(--gold); }
+.lfl-img { height: 90px; }
+.lfl-1 { background: linear-gradient(135deg, #E8DDD0, #C4B098); }
+.lfl-2 { background: linear-gradient(135deg, #D0C8BC, #B8ACAA); }
+.lfl-3 { background: linear-gradient(135deg, #C8C0B4, #ACA498); }
+.lfl-4 { background: linear-gradient(135deg, #E0D4C8, #C4B8A8); }
+.lfl-info { padding: 9px 10px 11px; }
+.lfl-name { font-size: 11px; color: rgba(245,240,232,0.75); margin-bottom: 3px; }
+.lfl-price { font-family: 'Cormorant Garamond', serif; font-size: 15px; color: var(--gold); }
+.lfl-save { font-size: 9px; color: #7CC87C; margin-top: 2px; }
 
-/* ═══════════════════════════
-   SCREEN: WISHLIST
-═══════════════════════════ */
-.wishlist-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:0 16px;}
-.wishlist-card{border-radius:12px;overflow:hidden;background:white;position:relative;cursor:pointer;}
-.wc-img{aspect-ratio:1;}
-.wc-1{background:linear-gradient(135deg,#E8DDD0,#C4B098);}
-.wc-2{background:linear-gradient(135deg,#2A3540,#3D5060);}
-.wc-3{background:linear-gradient(135deg,#F0EAE0,#D8CCBC);}
-.wc-4{background:linear-gradient(135deg,#3D2820,#6B3D28);}
-.wc-remove{position:absolute;top:8px;right:8px;width:24px;height:24px;background:rgba(255,255,255,0.9);border-radius:50%;border:none;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;}
-.wc-info{padding:10px 12px 12px;}
-.wc-name{font-family:'Cormorant Garamond',serif;font-size:15px;margin-bottom:4px;}
-.wc-price{font-size:13px;color:var(--gold);}
+.ctl-selected { margin: 0 20px 12px; background: rgba(245,240,232,0.05); border: 1px solid var(--gold-border); border-radius: 11px; padding: 11px 13px; display: flex; align-items: center; gap: 11px; }
+.ctl-sel-img { width: 42px; height: 42px; border-radius: 7px; flex-shrink: 0; }
+.ctl-sel-name { font-size: 12px; color: var(--cream); flex: 1; }
+.ctl-sel-price { font-family: 'Cormorant Garamond', serif; font-size: 15px; color: var(--gold); }
+.ctl-section { padding: 0 20px; margin-bottom: 16px; }
+.ctl-section-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(245,240,232,0.4); margin-bottom: 9px; }
+.ctl-row { display: flex; gap: 9px; overflow-x: auto; scrollbar-width: none; }
+.ctl-row::-webkit-scrollbar { display: none; }
+.ctl-item { flex-shrink: 0; width: 120px; background: rgba(245,240,232,0.04); border: 1px solid rgba(245,240,232,0.08); border-radius: 11px; overflow: hidden; cursor: pointer; transition: border-color 0.2s; }
+.ctl-item.on { border-color: var(--gold); }
+.ctl-item-img { height: 82px; }
+.ci-1 { background: linear-gradient(135deg, #2A3540, #3D5060); }
+.ci-2 { background: linear-gradient(135deg, #3D2820, #6B3D28); }
+.ci-3 { background: linear-gradient(135deg, #E0D8CC, #C8BCAC); }
+.ci-4 { background: linear-gradient(135deg, #1A1A1A, #2D2D2D); }
+.ci-5 { background: linear-gradient(135deg, #1A2820, #2E4535); }
+.ci-6 { background: linear-gradient(135deg, #3D3528, #5C5040); }
+.ctl-item-body { padding: 7px 9px 9px; }
+.ctl-item-name { font-size: 10px; color: rgba(245,240,232,0.65); margin-bottom: 2px; line-height: 1.3; }
+.ctl-item-price { font-family: 'Cormorant Garamond', serif; font-size: 13px; color: var(--gold); }
+.ctl-item-action { font-size: 8px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-top: 2px; }
+.ctl-item.on .ctl-item-action { color: var(--gold); }
 
-/* ═══════════════════════════
-   SCREEN: PROFILE
-═══════════════════════════ */
-.profile-hero{margin:0 16px 16px;background:linear-gradient(135deg,var(--ink) 0%,#2A2018 100%);border:1px solid rgba(201,169,110,0.15);border-radius:20px;padding:24px;display:flex;align-items:center;gap:16px;}
-.profile-avatar{width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#A52020);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:24px;color:white;font-weight:400;}
-.profile-name{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--cream);font-weight:300;}
-.profile-member{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-top:2px;}
-.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin:0 16px 16px;}
-.profile-stat{background:white;padding:16px 12px;text-align:center;border-radius:10px;}
-.ps-num{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--gold);}
-.ps-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:2px;}
-.profile-menu{display:flex;flex-direction:column;margin:0 16px;gap:2px;}
-.profile-menu-item{display:flex;align-items:center;justify-content:space-between;background:white;padding:14px 16px;border-radius:12px;cursor:pointer;transition:background 0.15s;}
-.profile-menu-item:active{background:var(--cream);}
-.pmi-left{display:flex;align-items:center;gap:14px;}
-.pmi-icon{width:36px;height:36px;border-radius:10px;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:16px;}
-.pmi-label{font-size:14px;font-weight:400;}
-.pmi-arrow{color:var(--muted);font-size:18px;}
+.cart-summary { margin: 0 20px 14px; background: rgba(245,240,232,0.04); border: 1px solid var(--gold-border); border-radius: 13px; padding: 14px; }
+.cs-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+.cs-row { display: flex; justify-content: space-between; margin-bottom: 7px; }
+.cs-row-name { font-size: 12px; color: rgba(245,240,232,0.6); }
+.cs-row-price { font-family: 'Cormorant Garamond', serif; font-size: 13px; color: var(--cream); }
+.cs-divider { height: 1px; background: rgba(201,169,110,0.15); margin: 9px 0; }
+.cs-total { display: flex; justify-content: space-between; align-items: center; }
+.cs-total-label { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+.cs-total-val { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--gold); }
 
-/* ═══════════════════════════
-   PRODUCT DETAIL SHEET
-═══════════════════════════ */
-.sheet-backdrop{position:fixed;inset:0;background:rgba(16,10,6,0.7);z-index:200;opacity:0;pointer-events:none;transition:opacity 0.3s;}
-.sheet-backdrop.open{opacity:1;pointer-events:all;}
-.bottom-sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:430px;background:var(--warm);border-radius:24px 24px 0 0;z-index:201;transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
-.bottom-sheet.open{transform:translateX(-50%) translateY(0);}
-.sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--div);margin:12px auto 4px;}
-.sheet-img{width:calc(100% - 32px);margin:0 16px;border-radius:16px;overflow:hidden;aspect-ratio:4/3;}
-.sheet-img-bg{width:100%;height:100%;}
-.sheet-body{padding:18px 20px 6px;}
-.sheet-hotel-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(139,0,0,0.1);border:1px solid rgba(139,0,0,0.25);padding:4px 12px;border-radius:20px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
-.sheet-name{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;line-height:1.1;margin-bottom:5px;}
-.sheet-category{font-size:11px;color:var(--muted);margin-bottom:14px;}
-.sheet-price{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;color:var(--gold);margin-bottom:14px;}
-.sheet-desc{font-size:13px;line-height:1.8;color:var(--muted);margin-bottom:20px;}
-.sheet-divider{height:1px;background:var(--div);margin-bottom:20px;}
-.sheet-details{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
-.sheet-detail{background:var(--cream);padding:12px;border-radius:10px;}
-.sd-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
-.sd-value{font-size:13px;font-weight:400;color:var(--ink);}
+.co-section { margin-bottom: 16px; padding: 0 20px; }
+.co-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 9px; }
+.co-row { display: flex; align-items: center; justify-content: space-between; background: rgba(245,240,232,0.05); border: 1px solid rgba(245,240,232,0.08); border-radius: 11px; padding: 13px 14px; margin-bottom: 7px; cursor: pointer; }
+.co-row:active { border-color: var(--gold); }
+.co-row-left { display: flex; align-items: center; gap: 11px; }
+.co-icon { width: 34px; height: 34px; background: var(--gold-dim); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+.co-row-lbl { font-size: 10px; color: rgba(245,240,232,0.4); }
+.co-row-val { font-size: 13px; color: var(--cream); }
+.co-row-arrow { color: var(--muted); font-size: 18px; }
+.co-items { background: rgba(245,240,232,0.03); border: 1px solid rgba(245,240,232,0.07); border-radius: 11px; overflow: hidden; margin-bottom: 7px; }
+.co-item { display: flex; gap: 11px; padding: 11px 13px; border-bottom: 1px solid rgba(245,240,232,0.05); align-items: center; }
+.co-item:last-child { border-bottom: none; }
+.co-item-img { width: 48px; height: 48px; border-radius: 7px; flex-shrink: 0; }
+.coi-1 { background: linear-gradient(135deg, #8B6E52, #6B4E35); }
+.coi-2 { background: linear-gradient(135deg, #2A3540, #3D5060); }
+.coi-3 { background: linear-gradient(135deg, #E0D8CC, #C8BCAC); }
+.co-item-name { font-size: 12px; color: var(--cream); margin-bottom: 2px; }
+.co-item-hotel { font-size: 10px; color: var(--muted); }
+.co-item-price { font-family: 'Cormorant Garamond', serif; font-size: 14px; color: var(--gold); margin-left: auto; flex-shrink: 0; }
+.co-totals { background: rgba(245,240,232,0.03); border: 1px solid rgba(245,240,232,0.07); border-radius: 11px; padding: 13px; }
+.co-total-row { display: flex; justify-content: space-between; margin-bottom: 7px; }
+.co-total-row:last-child { margin-bottom: 0; padding-top: 9px; border-top: 1px solid rgba(245,240,232,0.08); }
+.co-total-lbl { font-size: 11px; color: var(--muted); }
+.co-total-val { font-size: 12px; color: var(--cream); }
+.co-total-row:last-child .co-total-lbl { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; }
+.co-total-row:last-child .co-total-val { font-family: 'Cormorant Garamond', serif; font-size: 21px; color: var(--gold); }
+.submit-btn { width: 100%; padding: 17px; background: var(--gold); color: var(--ink); border: none; border-radius: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; font-weight: 500; margin-top: 14px; margin-bottom: 5px; transition: opacity 0.2s; }
+.submit-btn:active { opacity: 0.85; }
+.co-guest { text-align: center; font-size: 11px; color: var(--muted); padding: 4px 0; }
+.co-guest span { color: var(--gold); cursor: pointer; }
 
-/* Looks for Less in sheet */
-.sheet-lfl{padding:0 0 8px;}
-.sheet-lfl-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;padding:0 20px;}
-.sheet-lfl-row{display:flex;gap:10px;overflow-x:auto;padding:0 20px 4px;scrollbar-width:none;}
-.sheet-lfl-row::-webkit-scrollbar{display:none;}
-.sheet-lfl-item{flex-shrink:0;width:110px;background:var(--cream);border-radius:10px;overflow:hidden;cursor:pointer;border:1px solid var(--div);transition:border-color 0.2s;}
-.sheet-lfl-item:active{border-color:var(--gold);}
-.slfl-img{height:80px;}
-.slfl-1{background:linear-gradient(135deg,#E8DDD0,#C4B098);}
-.slfl-2{background:linear-gradient(135deg,#D8D0C4,#C0B4A8);}
-.slfl-3{background:linear-gradient(135deg,#C8C0B4,#B0A898);}
-.sheet-lfl-info{padding:8px;}
-.slfl-price{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--ink);}
-.slfl-save{font-size:9px;color:#2E7D32;font-weight:500;}
-.sheet-actions{display:flex;gap:10px;padding:0 20px 20px;position:sticky;bottom:0;background:var(--warm);padding-bottom:calc(20px + var(--safe-bot));}
-.sheet-save-btn{width:48px;height:52px;border:1.5px solid var(--div);border-radius:12px;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;transition:all 0.2s;}
-.sheet-save-btn:active{background:var(--cream);}
-.sheet-scan-btn{flex:1;height:52px;background:rgba(139,0,0,0.1);color:var(--gold);border:1.5px solid rgba(139,0,0,0.3);border-radius:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;transition:all 0.2s;}
-.sheet-add-btn{flex:1;height:52px;background:var(--ink);color:var(--cream);border:none;border-radius:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;transition:all 0.2s;}
-.sheet-add-btn:active{background:var(--gold);transform:scale(0.98);}
+.success-wrap { display: flex; flex-direction: column; align-items: center; padding: 48px 28px; text-align: center; }
+.success-icon { width: 70px; height: 70px; background: var(--gold-dim); border: 2px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 22px; }
+.success-title { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 300; color: var(--cream); margin-bottom: 9px; }
+.success-sub { font-size: 12px; color: rgba(245,240,232,0.5); line-height: 1.8; margin-bottom: 26px; }
+.success-order-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
+.success-order-num { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--cream); margin-bottom: 28px; }
+
+/* ─── MOODBOARD SCREEN ─── */
+.mb-intro { padding: 0 20px 18px; }
+.mb-eyebrow { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+.mb-title { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300; color: var(--cream); line-height: 1.2; margin-bottom: 8px; }
+.mb-sub { font-size: 12px; color: rgba(245,240,232,0.5); line-height: 1.7; }
+.upload-zone { margin: 0 20px 16px; border: 1.5px dashed rgba(201,169,110,0.4); border-radius: 18px; padding: 30px 22px; display: flex; flex-direction: column; align-items: center; gap: 11px; cursor: pointer; background: rgba(245,240,232,0.03); text-align: center; }
+.upload-zone:active { border-color: var(--gold); }
+.upload-icon-wrap { width: 50px; height: 50px; border-radius: 50%; background: var(--gold-dim); border: 1px solid var(--gold-border); display: flex; align-items: center; justify-content: center; font-size: 22px; }
+.upload-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--cream); }
+.upload-sub { font-size: 11px; color: rgba(245,240,232,0.4); line-height: 1.6; }
+.upload-btns { display: flex; gap: 10px; margin: 0 20px 16px; }
+.upload-btn { flex: 1; padding: 13px; border-radius: 13px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 7px; transition: opacity 0.2s; }
+.upload-btn:active { opacity: 0.8; }
+.upload-btn-gold { background: var(--gold); color: var(--ink); font-weight: 500; }
+.upload-btn-ghost { background: rgba(245,240,232,0.07); border: 1px solid rgba(245,240,232,0.15); color: var(--cream); }
+.room-preview-wrap { margin: 0 20px 14px; border-radius: 15px; overflow: hidden; aspect-ratio: 4/3; position: relative; display: none; }
+.room-preview-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.room-label { position: absolute; top: 11px; left: 11px; background: rgba(22,18,16,0.85); backdrop-filter: blur(8px); border: 1px solid var(--gold-border); padding: 4px 11px; border-radius: 20px; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); }
+.room-pin { position: absolute; width: 28px; height: 28px; border: 1.5px solid var(--gold); border-radius: 50%; background: rgba(201,169,110,0.2); display: flex; align-items: center; justify-content: center; cursor: pointer; animation: spotPulse 2s ease-in-out infinite; }
+.room-pin::after { content: ''; width: 7px; height: 7px; background: var(--gold); border-radius: 50%; }
+.ai-gen { margin: 0 20px; display: none; flex-direction: column; align-items: center; gap: 14px; padding: 30px; background: rgba(245,240,232,0.03); border: 1px solid var(--gold-border); border-radius: 18px; text-align: center; }
+.ai-spinner { width: 46px; height: 46px; border-radius: 50%; border: 2px solid var(--gold-dim); border-top-color: var(--gold); }
+.ai-gen-title { font-family: 'Cormorant Garamond', serif; font-size: 19px; color: var(--cream); }
+.ai-gen-sub { font-size: 11px; color: rgba(245,240,232,0.4); line-height: 1.6; }
+.mb-result { display: none; padding: 0 20px; }
+.mb-result-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; color: var(--cream); margin-bottom: 3px; }
+.mb-result-sub { font-size: 11px; color: rgba(245,240,232,0.45); margin-bottom: 14px; line-height: 1.6; }
+.mb-ai-card { background: rgba(245,240,232,0.04); border: 1px solid var(--gold-border); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+.mb-ai-eyebrow { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+.mb-ai-quote { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; color: rgba(245,240,232,0.75); line-height: 1.8; }
+.mb-placement { display: flex; gap: 11px; align-items: flex-start; background: rgba(245,240,232,0.04); border: 1px solid rgba(245,240,232,0.07); border-radius: 11px; padding: 11px; margin-bottom: 8px; }
+.mb-placement-img { width: 50px; height: 50px; border-radius: 7px; flex-shrink: 0; }
+.mbi-1 { background: linear-gradient(135deg, #8B6E52, #6B4E35); }
+.mbi-2 { background: linear-gradient(135deg, #2A3540, #3D5060); }
+.mbi-3 { background: linear-gradient(135deg, #E0D8CC, #C8BCAC); }
+.mb-placement-name { font-family: 'Cormorant Garamond', serif; font-size: 15px; color: var(--cream); margin-bottom: 3px; }
+.mb-placement-tip { font-size: 11px; color: rgba(245,240,232,0.5); line-height: 1.5; margin-bottom: 3px; }
+.mb-placement-pos { font-size: 10px; color: var(--gold); }
+.mb-regen { width: 100%; padding: 13px; background: var(--gold-dim); border: 1px solid var(--gold-border); border-radius: 13px; color: var(--gold); cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; transition: opacity 0.2s; }
+.mb-regen:active { opacity: 0.8; }
+
+/* ─── HOTELS SCREEN ─── */
+.hotel-card { margin: 0 16px 12px; border-radius: 16px; overflow: hidden; height: 190px; position: relative; cursor: pointer; }
+.hotel-card:active { opacity: 0.92; }
+.hc-1 { background: linear-gradient(135deg, #2C2018, #4A3525, #1E1410); }
+.hc-2 { background: linear-gradient(135deg, #1E2D33, #3D5058, #1A2830); }
+.hc-3 { background: linear-gradient(135deg, #2A2A2A, #3D3D3D); }
+.hc-4 { background: linear-gradient(135deg, #1A2820, #2E4535, #152018); }
+.hc-5 { background: linear-gradient(135deg, #2A2820, #4A3D2E, #231E18); }
+.hotel-card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 35% 30%, rgba(201,169,110,0.14) 0%, transparent 60%); }
+.hc-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(16,10,6,0.9) 0%, transparent 55%); padding: 16px; display: flex; flex-direction: column; justify-content: flex-end; }
+.hc-badge { position: absolute; top: 13px; left: 13px; background: var(--gold); color: var(--ink); font-size: 8px; letter-spacing: 2px; text-transform: uppercase; padding: 3px 9px; border-radius: 4px; font-weight: 500; }
+.hc-name { font-family: 'Cormorant Garamond', serif; font-size: 21px; font-weight: 300; color: var(--cream); margin-bottom: 3px; }
+.hc-loc { font-size: 10px; color: rgba(245,240,232,0.6); margin-bottom: 9px; }
+.hc-foot { display: flex; align-items: center; justify-content: space-between; }
+.hc-count { font-size: 11px; color: var(--gold-lt); }
+.hc-arrow { width: 28px; height: 28px; background: rgba(245,240,232,0.1); border: 1px solid rgba(245,240,232,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--cream); font-size: 14px; }
+
+/* ─── WISHLIST SCREEN ─── */
+.wl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 0 16px; }
+.wl-card { border-radius: 12px; overflow: hidden; background: white; cursor: pointer; position: relative; }
+.wl-img { aspect-ratio: 1; }
+.wl-1 { background: linear-gradient(135deg, #E8DDD0, #C4B098); }
+.wl-2 { background: linear-gradient(135deg, #2A3540, #3D5060); }
+.wl-3 { background: linear-gradient(135deg, #F0EAE0, #D8CCBC); }
+.wl-4 { background: linear-gradient(135deg, #3D2820, #6B3D28); }
+.wl-rm { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; background: rgba(255,255,255,0.9); border-radius: 50%; border: none; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+.wl-info { padding: 9px 11px 11px; }
+.wl-name { font-family: 'Cormorant Garamond', serif; font-size: 15px; color: var(--ink); margin-bottom: 3px; }
+.wl-price { font-size: 13px; color: var(--gold); }
+
+/* ─── PROFILE SCREEN ─── */
+.profile-hero { margin: 0 16px 14px; background: linear-gradient(135deg, var(--ink), #2A2018); border: 1px solid var(--gold-border); border-radius: 18px; padding: 22px; display: flex; align-items: center; gap: 14px; }
+.profile-avatar { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--gold-lt)); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--ink); font-weight: 400; }
+.profile-name { font-family: 'Cormorant Garamond', serif; font-size: 21px; color: var(--cream); font-weight: 300; }
+.profile-member { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-top: 2px; }
+.profile-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin: 0 16px 14px; }
+.profile-stat { background: white; padding: 14px 11px; text-align: center; border-radius: 10px; }
+.ps-num { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300; color: var(--gold); }
+.ps-label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-top: 2px; }
+.profile-menu { display: flex; flex-direction: column; gap: 2px; margin: 0 16px; }
+.profile-item { display: flex; align-items: center; justify-content: space-between; background: white; padding: 13px 15px; border-radius: 11px; cursor: pointer; }
+.profile-item:active { background: var(--cream); }
+.pi-left { display: flex; align-items: center; gap: 13px; }
+.pi-icon { width: 34px; height: 34px; border-radius: 9px; background: var(--cream); display: flex; align-items: center; justify-content: center; font-size: 15px; }
+.pi-label { font-size: 14px; font-weight: 400; color: var(--ink); }
+.pi-arrow { color: var(--muted); font-size: 18px; }
+
+/* ─── PRODUCT SHEET ─── */
+.sheet-img-wrap { width: calc(100% - 32px); margin: 0 16px; border-radius: 15px; overflow: hidden; aspect-ratio: 4/3; }
+.sheet-body { padding: 16px 19px 4px; }
+.sheet-hotel-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(201,169,110,0.1); border: 1px solid rgba(201,169,110,0.25); padding: 4px 11px; border-radius: 20px; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 9px; }
+.sheet-prod-name { font-family: 'Cormorant Garamond', serif; font-size: 25px; font-weight: 300; line-height: 1.1; color: var(--ink); margin-bottom: 4px; }
+.sheet-prod-cat { font-size: 11px; color: var(--muted); margin-bottom: 12px; }
+.sheet-prod-price { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: var(--gold); margin-bottom: 12px; }
+.sheet-prod-desc { font-size: 13px; line-height: 1.8; color: var(--muted); margin-bottom: 18px; }
+.sheet-divider { height: 1px; background: var(--div); margin-bottom: 18px; }
+.sheet-details { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 18px; }
+.sheet-detail { background: var(--cream); padding: 11px; border-radius: 9px; }
+.detail-label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+.detail-val { font-size: 13px; font-weight: 400; color: var(--ink); }
+.sheet-lfl-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 11px; padding: 0 19px; }
+.sheet-lfl-row { display: flex; gap: 9px; overflow-x: auto; padding: 0 19px 4px; scrollbar-width: none; }
+.sheet-lfl-row::-webkit-scrollbar { display: none; }
+.slfl-card { flex-shrink: 0; width: 100px; background: var(--cream); border-radius: 9px; overflow: hidden; cursor: pointer; border: 1px solid var(--div); }
+.slfl-card:active { border-color: var(--gold); }
+.slfl-img { height: 74px; }
+.slfl-i1 { background: linear-gradient(135deg, #E8DDD0, #C4B098); }
+.slfl-i2 { background: linear-gradient(135deg, #D8D0C4, #C0B4A8); }
+.slfl-i3 { background: linear-gradient(135deg, #C8C0B4, #B0A898); }
+.slfl-body { padding: 7px 8px; }
+.slfl-price { font-family: 'Cormorant Garamond', serif; font-size: 14px; color: var(--ink); }
+.slfl-save { font-size: 9px; color: #2E7D32; font-weight: 500; }
+.sheet-actions { display: flex; gap: 9px; padding: 0 19px 20px; position: sticky; bottom: 0; background: #FAF7F2; }
+.sheet-save-btn { width: 46px; height: 50px; border: 1.5px solid var(--div); border-radius: 11px; background: none; cursor: pointer; font-size: 19px; display: flex; align-items: center; justify-content: center; }
+.sheet-room-btn { flex: 1; height: 50px; background: var(--gold-dim); color: var(--gold); border: 1.5px solid var(--gold-border); border-radius: 11px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; }
+.sheet-add-btn { flex: 1; height: 50px; background: var(--ink); color: var(--cream); border: none; border-radius: 11px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; }
+.sheet-add-btn:active { background: var(--gold); color: var(--ink); }
+
+/* ─── CART SHEET ─── */
+.cart-head { display: flex; align-items: center; justify-content: space-between; padding: 4px 19px 13px; border-bottom: 1px solid rgba(245,240,232,0.07); }
+.cart-title { font-family: 'Cormorant Garamond', serif; font-size: 21px; font-weight: 300; color: var(--cream); }
+.cart-close { background: rgba(245,240,232,0.08); border-radius: 50%; width: 30px; height: 30px; border: none; cursor: pointer; font-size: 16px; color: var(--muted); display: flex; align-items: center; justify-content: center; }
+.cart-items { overflow-y: auto; max-height: 38vh; padding: 0 19px; }
+.cart-item { display: flex; gap: 13px; padding: 13px 0; border-bottom: 1px solid rgba(245,240,232,0.06); align-items: center; }
+.cart-item-img { width: 66px; height: 66px; border-radius: 9px; flex-shrink: 0; }
+.cii-1 { background: linear-gradient(135deg, #8B6E52, #6B4E35); }
+.cii-2 { background: linear-gradient(135deg, #2A3540, #3D5060); }
+.cii-3 { background: linear-gradient(135deg, #3D2820, #6B3D28); }
+.cart-item-name { font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--cream); margin-bottom: 2px; }
+.cart-item-hotel { font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+.cart-item-price { font-family: 'Cormorant Garamond', serif; font-size: 14px; color: var(--gold); }
+.cart-rm { background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; padding: 4px; margin-left: auto; flex-shrink: 0; }
+.cart-foot { padding: 13px 19px; border-top: 1px solid rgba(245,240,232,0.07); }
+.cart-total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 13px; }
+.cart-total-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+.cart-total-amount { font-family: 'Cormorant Garamond', serif; font-size: 25px; color: var(--gold); }
+.cart-checkout-btn { width: 100%; height: 50px; background: var(--gold); color: var(--ink); border: none; border-radius: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; font-weight: 500; }
+.cart-checkout-btn:active { opacity: 0.85; }
 </style>
 </head>
 <body>
 <div id="app">
 
-<!-- ══ SCREEN: DISCOVER ══ -->
-<div class="screen active" id="screen-home">
-  <div class="status-bar"></div>
-  <div class="top-bar">
-    <div class="top-bar-logo">Hand <span>Selected</span></div>
-    <div class="top-bar-actions">
-      <button class="icon-btn" onclick="showToast('Search coming soon')">
+<!-- ════════════════════════
+     DISCOVER
+════════════════════════ -->
+<div class="screen screen-light active" id="s-home">
+  <div class="sb"></div>
+  <div class="topbar topbar-light">
+    <div class="logo logo-dark">Hand <span>Selected</span></div>
+    <div class="top-btns">
+      <button class="ibtn ibtn-dark" onclick="toast('Search coming soon')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       </button>
-      <button class="icon-btn" onclick="openCart()">
+      <button class="ibtn ibtn-dark" onclick="openCart()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
         <span class="badge" id="cartBadge">3</span>
       </button>
     </div>
   </div>
 
-  <div class="hero-card mb-20" onclick="switchScreen('screen-hotels',null)">
+  <div class="hero" onclick="goTo('s-hotels', 'tab-hotels')" style="margin-bottom:14px;">
     <div class="hero-overlay">
-      <div class="hero-tag"><span class="hero-dot"></span>Exclusive Partner</div>
+      <div class="hero-pill">✦ Exclusive Partner</div>
       <h2>Rosewood<br>São Paulo</h2>
       <div class="hero-sub">47 curated pieces available</div>
-      <div class="hero-btn"><span>Shop This Hotel</span><span>→</span></div>
+      <div class="hero-cta"><span>Shop This Hotel</span><span>→</span></div>
     </div>
   </div>
 
-  <div class="hero-dots mb-24">
-    <div class="hero-dot-ind active"></div>
-    <div class="hero-dot-ind"></div>
-    <div class="hero-dot-ind"></div>
-    <div class="hero-dot-ind"></div>
-  </div>
-
-  <div class="sec-head mb-20">
+  <div class="sec-head" style="margin-bottom:12px;">
     <div class="sec-title">Partner Hotels</div>
-    <button class="sec-more" onclick="switchScreen('screen-hotels',null)">See All</button>
+    <button class="sec-more" onclick="goTo('s-hotels','tab-hotels')">See All</button>
+  </div>
+  <div class="hscroll" style="margin-bottom:22px;">
+    <div class="hotel-pill" onclick="goTo('s-hotels','tab-hotels')"><div class="hotel-pill-img hi-1"></div><div class="hotel-pill-info"><div class="hotel-pill-name">Aman New York</div><div class="hotel-pill-loc">New York · 31 items</div></div></div>
+    <div class="hotel-pill" onclick="goTo('s-hotels','tab-hotels')"><div class="hotel-pill-img hi-2"></div><div class="hotel-pill-info"><div class="hotel-pill-name">The Connaught</div><div class="hotel-pill-loc">London · 28 items</div></div></div>
+    <div class="hotel-pill" onclick="goTo('s-hotels','tab-hotels')"><div class="hotel-pill-img hi-3"></div><div class="hotel-pill-info"><div class="hotel-pill-name">1 Hotel SoBe</div><div class="hotel-pill-loc">Miami · 38 items</div></div></div>
+    <div class="hotel-pill" onclick="goTo('s-hotels','tab-hotels')"><div class="hotel-pill-img hi-4"></div><div class="hotel-pill-info"><div class="hotel-pill-name">Four Seasons</div><div class="hotel-pill-loc">Florence · 52 items</div></div></div>
+    <div class="hotel-pill" onclick="goTo('s-hotels','tab-hotels')"><div class="hotel-pill-img hi-5"></div><div class="hotel-pill-info"><div class="hotel-pill-name">Bvlgari Milano</div><div class="hotel-pill-loc">Milan · 24 items</div></div></div>
   </div>
 
-  <div class="h-scroll mb-28">
-    <div class="hotel-pill" onclick="switchScreen('screen-hotels',null)"><div class="hotel-pill-img hp-1"></div><div class="hotel-pill-info"><div class="hotel-pill-name">Aman New York</div><div class="hotel-pill-loc">New York · 31 items</div></div></div>
-    <div class="hotel-pill" onclick="switchScreen('screen-hotels',null)"><div class="hotel-pill-img hp-2"></div><div class="hotel-pill-info"><div class="hotel-pill-name">The Connaught</div><div class="hotel-pill-loc">London · 28 items</div></div></div>
-    <div class="hotel-pill" onclick="switchScreen('screen-hotels',null)"><div class="hotel-pill-img hp-3"></div><div class="hotel-pill-info"><div class="hotel-pill-name">1 Hotel SoBe</div><div class="hotel-pill-loc">Miami · 38 items</div></div></div>
-    <div class="hotel-pill" onclick="switchScreen('screen-hotels',null)"><div class="hotel-pill-img hp-4"></div><div class="hotel-pill-info"><div class="hotel-pill-name">Four Seasons</div><div class="hotel-pill-loc">Florence · 52 items</div></div></div>
-    <div class="hotel-pill" onclick="switchScreen('screen-hotels',null)"><div class="hotel-pill-img hp-5"></div><div class="hotel-pill-info"><div class="hotel-pill-name">Bvlgari Milano</div><div class="hotel-pill-loc">Milan · 24 items</div></div></div>
+  <div class="chips" style="margin-bottom:18px;">
+    <div class="chip active" onclick="filterChip(this,'All')">All</div>
+    <div class="chip" onclick="filterChip(this,'Furniture')">Furniture</div>
+    <div class="chip" onclick="filterChip(this,'Lighting')">Lighting</div>
+    <div class="chip" onclick="filterChip(this,'Linens')">Linens</div>
+    <div class="chip" onclick="filterChip(this,'Accessories')">Accessories</div>
+    <div class="chip" onclick="filterChip(this,'Candles')">Candles</div>
   </div>
 
-  <div class="cat-chips mb-20" style="margin-top:16px;">
-    <div class="cat-chip active" onclick="filterCat(this)">All</div>
-    <div class="cat-chip" onclick="filterCat(this)">Furniture</div>
-    <div class="cat-chip" onclick="filterCat(this)">Lighting</div>
-    <div class="cat-chip" onclick="filterCat(this)">Linens</div>
-    <div class="cat-chip" onclick="filterCat(this)">Accessories</div>
-    <div class="cat-chip" onclick="filterCat(this)">Candles</div>
+  <div class="sec-head" style="margin-bottom:10px;">
+    <div class="sec-title">New Arrivals</div>
+    <button class="sec-more">View All</button>
   </div>
-
-  <div class="sec-head"><div class="sec-title">New Arrivals</div><button class="sec-more">View All</button></div>
-
-  <div class="prod-grid mt-8">
-    <div class="prod-card" onclick="openProductSheet('Linen Armchair','$2,400','Rosewood São Paulo','Furniture','Handcrafted Belgian linen armchair from the Rosewood São Paulo Garden Suites. Solid walnut frame, hand-finished.','pc-1')">
-      <div class="prod-card-img pc-1"><span class="prod-tag new">New</span><button class="prod-save" onclick="event.stopPropagation();saveItem()">♡</button></div>
-      <div class="prod-card-info"><div class="prod-card-cat">Furniture</div><div class="prod-card-name">Linen Armchair</div><div class="prod-card-hotel">Rosewood SP</div><div class="prod-card-foot"><span class="prod-card-price">$2,400</span><button class="prod-add-btn" onclick="event.stopPropagation();addToCartM()">+</button></div></div>
+  <div class="prod-grid">
+    <div class="prod-card" onclick="openSheet('Linen Armchair','$2,400','Rosewood São Paulo','Furniture','Handcrafted Belgian linen armchair from the Rosewood SP Garden Suites. Solid walnut frame, hand-finished.','pi-1')">
+      <div class="prod-card-img pi-1"><span class="prod-tag tag-new">New</span><button class="prod-save" onclick="event.stopPropagation();saveItem()">♡</button></div>
+      <div class="prod-card-info"><div class="prod-cat">Furniture</div><div class="prod-name">Linen Armchair</div><div class="prod-hotel-tag">Rosewood SP</div><div class="prod-foot"><span class="prod-price">$2,400</span><button class="prod-add" onclick="event.stopPropagation();addToCart()">+</button></div></div>
     </div>
-    <div class="prod-card" onclick="openProductSheet('Brass Table Lamp','$890','Aman New York','Lighting','Handcrafted brushed brass table lamp from the Aman New York guest suites, with Como linen shade.','pc-2')">
-      <div class="prod-card-img pc-2"><span class="prod-tag exc">Exclusive</span><button class="prod-save" onclick="event.stopPropagation();saveItem()">♡</button></div>
-      <div class="prod-card-info"><div class="prod-card-cat">Lighting</div><div class="prod-card-name">Brass Table Lamp</div><div class="prod-card-hotel">Aman New York</div><div class="prod-card-foot"><span class="prod-card-price">$890</span><button class="prod-add-btn" onclick="event.stopPropagation();addToCartM()">+</button></div></div>
+    <div class="prod-card" onclick="openSheet('Brass Table Lamp','$890','Aman New York','Lighting','Handcrafted brushed brass lamp from the Aman New York guest suites with Como linen shade.','pi-2')">
+      <div class="prod-card-img pi-2"><span class="prod-tag tag-exc">Exclusive</span><button class="prod-save" onclick="event.stopPropagation();saveItem()">♡</button></div>
+      <div class="prod-card-info"><div class="prod-cat">Lighting</div><div class="prod-name">Brass Table Lamp</div><div class="prod-hotel-tag">Aman New York</div><div class="prod-foot"><span class="prod-price">$890</span><button class="prod-add" onclick="event.stopPropagation();addToCart()">+</button></div></div>
     </div>
-    <div class="prod-card" onclick="openProductSheet('Linen Bedding Set','$480','The Connaught','Linens','600-thread count Egyptian cotton, monogrammed with The Connaught signature embroidery. Set of 4.','pc-3')">
-      <div class="prod-card-img pc-3"><button class="prod-save" onclick="event.stopPropagation();saveItem()">♡</button></div>
-      <div class="prod-card-info"><div class="prod-card-cat">Linens</div><div class="prod-card-name">Linen Bedding</div><div class="prod-card-hotel">The Connaught</div><div class="prod-card-foot"><span class="prod-card-price">$480</span><button class="prod-add-btn" onclick="event.stopPropagation();addToCartM()">+</button></div></div>
+    <div class="prod-card" onclick="openSheet('Linen Bedding Set','$480','The Connaught','Linens','600-thread count Egyptian cotton, monogrammed with The Connaught signature embroidery.','pi-3')">
+      <div class="prod-card-img pi-3"><button class="prod-save" onclick="event.stopPropagation();saveItem()">♡</button></div>
+      <div class="prod-card-info"><div class="prod-cat">Linens</div><div class="prod-name">Linen Bedding</div><div class="prod-hotel-tag">The Connaught</div><div class="prod-foot"><span class="prod-price">$480</span><button class="prod-add" onclick="event.stopPropagation();addToCart()">+</button></div></div>
     </div>
-    <div class="prod-card" onclick="openProductSheet('Marble Console','$4,200','Four Seasons Florence','Furniture','Hand-carved Carrara marble console from the Four Seasons Firenze garden suites. Each piece unique.','pc-4')">
-      <div class="prod-card-img pc-4"><span class="prod-tag exc">Exclusive</span><button class="prod-save" onclick="event.stopPropagation();saveItem()">♡</button></div>
-      <div class="prod-card-info"><div class="prod-card-cat">Furniture</div><div class="prod-card-name">Marble Console</div><div class="prod-card-hotel">Four Seasons FLR</div><div class="prod-card-foot"><span class="prod-card-price">$4,200</span><button class="prod-add-btn" onclick="event.stopPropagation();addToCartM()">+</button></div></div>
+    <div class="prod-card" onclick="openSheet('Marble Console','$4,200','Four Seasons Florence','Furniture','Hand-carved Carrara marble console from the Four Seasons Firenze garden suites.','pi-4')">
+      <div class="prod-card-img pi-4"><span class="prod-tag tag-exc">Exclusive</span><button class="prod-save" onclick="event.stopPropagation();saveItem()">♡</button></div>
+      <div class="prod-card-info"><div class="prod-cat">Furniture</div><div class="prod-name">Marble Console</div><div class="prod-hotel-tag">Four Seasons FLR</div><div class="prod-foot"><span class="prod-price">$4,200</span><button class="prod-add" onclick="event.stopPropagation();addToCart()">+</button></div></div>
     </div>
-    <div class="prod-card" onclick="openProductSheet('Amber Candle','$95','Rosewood São Paulo','Candles &amp; Scent','The signature scent of Rosewood SP — amber, sandalwood, and tonka bean. Hand-poured in small batches.','pc-5')">
-      <div class="prod-card-img pc-5"><span class="prod-tag new">New</span><button class="prod-save" onclick="event.stopPropagation();saveItem()">♡</button></div>
-      <div class="prod-card-info"><div class="prod-card-cat">Candles</div><div class="prod-card-name">Amber Candle</div><div class="prod-card-hotel">Rosewood SP</div><div class="prod-card-foot"><span class="prod-card-price">$95</span><button class="prod-add-btn" onclick="event.stopPropagation();addToCartM()">+</button></div></div>
+    <div class="prod-card" onclick="openSheet('Amber Candle','$95','Rosewood São Paulo','Candles','The signature scent of Rosewood SP — amber, sandalwood, and tonka bean.','pi-5')">
+      <div class="prod-card-img pi-5"><span class="prod-tag tag-new">New</span><button class="prod-save" onclick="event.stopPropagation();saveItem()">♡</button></div>
+      <div class="prod-card-info"><div class="prod-cat">Candles</div><div class="prod-name">Amber Candle</div><div class="prod-hotel-tag">Rosewood SP</div><div class="prod-foot"><span class="prod-price">$95</span><button class="prod-add" onclick="event.stopPropagation();addToCart()">+</button></div></div>
     </div>
-    <div class="prod-card" onclick="openProductSheet('Woven Throw','$320','1 Hotel South Beach','Linens','Ethically sourced organic cotton throw, woven by artisans in Portugal. Featured in all 1 Hotel suites.','pc-6')">
-      <div class="prod-card-img pc-6"><button class="prod-save" onclick="event.stopPropagation();saveItem()">♡</button></div>
-      <div class="prod-card-info"><div class="prod-card-cat">Linens</div><div class="prod-card-name">Woven Throw</div><div class="prod-card-hotel">1 Hotel SoBe</div><div class="prod-card-foot"><span class="prod-card-price">$320</span><button class="prod-add-btn" onclick="event.stopPropagation();addToCartM()">+</button></div></div>
+    <div class="prod-card" onclick="openSheet('Woven Throw','$320','1 Hotel South Beach','Linens','Organic cotton throw woven by artisans in Portugal. Featured in all 1 Hotel suites.','pi-6')">
+      <div class="prod-card-img pi-6"><button class="prod-save" onclick="event.stopPropagation();saveItem()">♡</button></div>
+      <div class="prod-card-info"><div class="prod-cat">Linens</div><div class="prod-name">Woven Throw</div><div class="prod-hotel-tag">1 Hotel SoBe</div><div class="prod-foot"><span class="prod-price">$320</span><button class="prod-add" onclick="event.stopPropagation();addToCart()">+</button></div></div>
     </div>
   </div>
 </div>
 
-<!-- ══ SCREEN: SCAN — 5 STEPS ══ -->
-<div class="screen" id="screen-scan" style="background:var(--ink);">
-  <div class="status-bar" style="background:var(--ink);"></div>
-  <div class="top-bar dark">
-    <div class="top-bar-logo light">Photo <span>Scan</span></div>
-    <button class="icon-btn light" onclick="showToast('Help: Point camera at any hotel room')">
+<!-- ════════════════════════
+     SCAN — 5 STEPS
+════════════════════════ -->
+<div class="screen screen-dark" id="s-scan">
+  <div class="sb"></div>
+  <div class="topbar topbar-dark">
+    <div class="logo logo-light">Photo <span>Scan</span></div>
+    <button class="ibtn ibtn-light" onclick="toast('Point at any hotel room')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
     </button>
   </div>
-
-  <!-- Step nav -->
-  <div class="scan-steps-nav">
-    <div class="step-dot active" id="sdot-1" onclick="goToScanStep(1)">1</div>
-    <div class="step-line" id="sline-1"></div>
-    <div class="step-dot" id="sdot-2" onclick="goToScanStep(2)">2</div>
-    <div class="step-line" id="sline-2"></div>
-    <div class="step-dot" id="sdot-3" onclick="goToScanStep(3)">3</div>
-    <div class="step-line" id="sline-3"></div>
-    <div class="step-dot" id="sdot-4" onclick="goToScanStep(4)">4</div>
-    <div class="step-line" id="sline-4"></div>
-    <div class="step-dot" id="sdot-5" onclick="goToScanStep(5)">5</div>
+  <div class="step-nav" id="stepNav">
+    <div class="sdot active" id="sd1">1</div><div class="sline" id="sl1"></div>
+    <div class="sdot" id="sd2">2</div><div class="sline" id="sl2"></div>
+    <div class="sdot" id="sd3">3</div><div class="sline" id="sl3"></div>
+    <div class="sdot" id="sd4">4</div><div class="sline" id="sl4"></div>
+    <div class="sdot" id="sd5">5</div>
   </div>
 
-  <!-- STEP 1: Take Photo -->
-  <div class="scan-step-panel active" id="scan-panel-1">
-    <div class="scan-header">
-      <div class="scan-step-label">Step 1 of 5</div>
-      <div class="scan-title">Take a Photo</div>
-      <div class="scan-sub">Point your camera at any hotel room, lobby, or suite. Our AI identifies every item instantly.</div>
+  <!-- Step 1 -->
+  <div class="step-panel active fade-up" id="sp1">
+    <div class="step-head">
+      <div class="step-label">Step 1 of 5</div>
+      <div class="step-title">Take a Photo</div>
+      <div class="step-sub">Point your camera at any hotel room. Our AI identifies every piece in seconds.</div>
     </div>
     <div class="viewfinder">
       <div class="vf-corner tl"></div><div class="vf-corner tr"></div><div class="vf-corner bl"></div><div class="vf-corner br"></div>
-      <div class="vf-scan-line"></div>
-      <div class="vf-hotspot vf-h1" onclick="showToast('Tap to see item details')"></div>
-      <div class="vf-hotspot vf-h2" onclick="showToast('Tap to see item details')"></div>
-      <div class="vf-hotspot vf-h3" onclick="showToast('Tap to see item details')"></div>
+      <div class="scan-line"></div>
+      <div class="vf-spot" style="top:30%;left:18%;animation-delay:0s;" onclick="toast('Identifying item...')"></div>
+      <div class="vf-spot" style="top:20%;right:22%;animation-delay:0.7s;" onclick="toast('Identifying item...')"></div>
+      <div class="vf-spot" style="bottom:36%;left:48%;animation-delay:1.4s;" onclick="toast('Identifying item...')"></div>
     </div>
     <div class="cam-btns">
-      <button class="cam-btn primary" onclick="goToScanStep(2)">
+      <button class="cam-btn cam-gold" onclick="gotoStep(2)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
         Take Photo
       </button>
-      <button class="cam-btn secondary" onclick="goToScanStep(2)">
+      <button class="cam-btn cam-ghost" onclick="gotoStep(2)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
         Upload
       </button>
     </div>
   </div>
 
-  <!-- STEP 2: Hand Selected Identifies -->
-  <div class="scan-step-panel" id="scan-panel-2">
-    <div class="scan-header">
-      <div class="scan-step-label">Step 2 of 5</div>
-      <div class="scan-title">Items Identified</div>
-      <div class="scan-sub">Hand Selected located 3 products, their brands, and pricing from your photo.</div>
+  <!-- Step 2 -->
+  <div class="step-panel" id="sp2">
+    <div class="step-head">
+      <div class="step-label">Step 2 of 5</div>
+      <div class="step-title">Items Identified</div>
+      <div class="step-sub">Hand Selected found 3 products, their brands, and pricing.</div>
     </div>
-    <div class="identify-img">
-      <div class="identify-badge">3 Items Found</div>
-      <div class="identify-hotspot ih-1" style="top:30%;left:20%"></div>
-      <div class="identify-hotspot ih-2" style="top:20%;right:22%"></div>
-      <div class="identify-hotspot ih-3" style="bottom:28%;left:48%"></div>
+    <div class="id-img">
+      <div class="id-badge">3 Items Found</div>
+      <div class="id-spot" style="top:28%;left:20%;"></div>
+      <div class="id-spot" style="top:18%;right:24%;"></div>
+      <div class="id-spot" style="bottom:28%;left:50%;"></div>
     </div>
-    <div class="identified-items">
-      <div class="identified-title">Select items to shop</div>
-      <div class="identified-item" onclick="toggleCheck(this)">
-        <div class="ii-swatch is-1"></div>
-        <div class="ii-info"><div class="ii-name">Caristo Armchair</div><div class="ii-brand">ART LAB · Rosewood SP</div><div class="ii-price">$750</div></div>
-        <div class="ii-check checked">✓</div>
+    <div class="id-list">
+      <div class="id-list-label">Select items to shop</div>
+      <div class="id-item" onclick="toggleCheck(this)">
+        <div class="id-swatch sw-1"></div>
+        <div class="id-info"><div class="id-name">Caristo Armchair</div><div class="id-brand">ART LAB · Rosewood SP</div><div class="id-price">$750</div></div>
+        <div class="id-check on">✓</div>
       </div>
-      <div class="identified-item" onclick="toggleCheck(this)">
-        <div class="ii-swatch is-2"></div>
-        <div class="ii-info"><div class="ii-name">Brass Floor Lamp</div><div class="ii-brand">Porta Romana · Aman NY</div><div class="ii-price">$1,200</div></div>
-        <div class="ii-check checked">✓</div>
+      <div class="id-item" onclick="toggleCheck(this)">
+        <div class="id-swatch sw-2"></div>
+        <div class="id-info"><div class="id-name">Brass Floor Lamp</div><div class="id-brand">Porta Romana · Aman NY</div><div class="id-price">$1,200</div></div>
+        <div class="id-check on">✓</div>
       </div>
-      <div class="identified-item" onclick="toggleCheck(this)">
-        <div class="ii-swatch is-3"></div>
-        <div class="ii-info"><div class="ii-name">Walnut Side Table</div><div class="ii-brand">De La Espada · Connaught</div><div class="ii-price">$980</div></div>
-        <div class="ii-check">✓</div>
+      <div class="id-item" onclick="toggleCheck(this)">
+        <div class="id-swatch sw-3"></div>
+        <div class="id-info"><div class="id-name">Walnut Side Table</div><div class="id-brand">De La Espada · Connaught</div><div class="id-price">$980</div></div>
+        <div class="id-check">✓</div>
       </div>
     </div>
-    <button class="scan-next-btn" onclick="goToScanStep(3)">
-      Compare Looks for Less
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </button>
-    <span class="scan-back-link" onclick="goToScanStep(1)">← Retake Photo</span>
+    <button class="next-btn" onclick="gotoStep(3)">Compare Looks for Less <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+    <span class="back-link" onclick="gotoStep(1)">← Retake Photo</span>
   </div>
 
-  <!-- STEP 3: Looks for Less -->
-  <div class="scan-step-panel" id="scan-panel-3">
-    <div class="looks-header">
-      <div class="scan-step-label">Step 3 of 5</div>
-      <div class="scan-title">Looks for Less</div>
-      <div class="scan-sub">We found similar pieces at lower price points. Compare and choose what's right for you.</div>
+  <!-- Step 3 -->
+  <div class="step-panel" id="sp3">
+    <div class="step-head">
+      <div class="step-label">Step 3 of 5</div>
+      <div class="step-title">Looks for Less</div>
+      <div class="step-sub">Similar styles at lower price points. Choose the original or a budget alternative.</div>
     </div>
-    <div class="lfl-product">
-      <div class="lfl-img is-1"></div>
-      <div class="lfl-info"><div class="lfl-name">Caristo Armchair</div><div class="lfl-hotel">ART LAB · Original</div><div class="lfl-price-orig">$750</div></div>
+    <div class="lfl-orig">
+      <div class="lfl-orig-img sw-1"></div>
+      <div><div class="lfl-orig-name">Caristo Armchair</div><div class="lfl-orig-hotel">ART LAB · Original</div><div class="lfl-orig-price">$750</div></div>
     </div>
     <div class="lfl-section-title">Similar Styles</div>
     <div class="lfl-grid">
-      <div class="lfl-item" onclick="addToCartM();showToast('Added look-alike to bag')">
-        <div class="lfl-item-img lfl-i1"></div>
-        <div class="lfl-item-info"><div class="lfl-item-name">Bergen Chair</div><div class="lfl-item-price">$399</div><div class="lfl-item-save">Save $351</div></div>
-      </div>
-      <div class="lfl-item" onclick="addToCartM();showToast('Added look-alike to bag')">
-        <div class="lfl-item-img lfl-i2"></div>
-        <div class="lfl-item-info"><div class="lfl-item-name">Oslo Lounge</div><div class="lfl-item-price">$249</div><div class="lfl-item-save">Save $501</div></div>
-      </div>
-      <div class="lfl-item" onclick="addToCartM();showToast('Added look-alike to bag')">
-        <div class="lfl-item-img lfl-i3"></div>
-        <div class="lfl-item-info"><div class="lfl-item-name">Linen Wing</div><div class="lfl-item-price">$480</div><div class="lfl-item-save">Save $270</div></div>
-      </div>
-      <div class="lfl-item" onclick="addToCartM();showToast('Added look-alike to bag')">
-        <div class="lfl-item-img lfl-i4"></div>
-        <div class="lfl-item-info"><div class="lfl-item-name">Nordic Rest</div><div class="lfl-item-price">$600</div><div class="lfl-item-save">Save $150</div></div>
-      </div>
+      <div class="lfl-card" onclick="addToCart();toast('Bergen Chair added')"><div class="lfl-img lfl-1"></div><div class="lfl-info"><div class="lfl-name">Bergen Chair</div><div class="lfl-price">$399</div><div class="lfl-save">Save $351</div></div></div>
+      <div class="lfl-card" onclick="addToCart();toast('Oslo Lounge added')"><div class="lfl-img lfl-2"></div><div class="lfl-info"><div class="lfl-name">Oslo Lounge</div><div class="lfl-price">$249</div><div class="lfl-save">Save $501</div></div></div>
+      <div class="lfl-card" onclick="addToCart();toast('Linen Wing added')"><div class="lfl-img lfl-3"></div><div class="lfl-info"><div class="lfl-name">Linen Wing</div><div class="lfl-price">$480</div><div class="lfl-save">Save $270</div></div></div>
+      <div class="lfl-card" onclick="addToCart();toast('Nordic Rest added')"><div class="lfl-img lfl-4"></div><div class="lfl-info"><div class="lfl-name">Nordic Rest</div><div class="lfl-price">$600</div><div class="lfl-save">Save $150</div></div></div>
     </div>
-    <button class="scan-next-btn" onclick="goToScanStep(4)">
-      Complete the Look
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </button>
-    <span class="scan-back-link" onclick="goToScanStep(2)">← Back to Identified Items</span>
+    <button class="next-btn" onclick="gotoStep(4)">Complete the Look <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+    <span class="back-link" onclick="gotoStep(2)">← Back</span>
   </div>
 
-  <!-- STEP 4: Complete the Look -->
-  <div class="scan-step-panel" id="scan-panel-4">
-    <div class="ctl-header">
-      <div class="scan-step-label">Step 4 of 5</div>
-      <div class="scan-title">Complete the Look</div>
-      <div class="scan-sub">Curated additions to finish your room, sourced from the same hotel aesthetic.</div>
+  <!-- Step 4 -->
+  <div class="step-panel" id="sp4">
+    <div class="step-head">
+      <div class="step-label">Step 4 of 5</div>
+      <div class="step-title">Complete the Look</div>
+      <div class="step-sub">Curated additions to finish your space from the same hotel aesthetic.</div>
     </div>
     <div class="ctl-selected">
-      <div class="ctl-selected-img is-1"></div>
-      <div class="ctl-selected-name">Caristo Armchair (selected)</div>
-      <div class="ctl-selected-price">$750</div>
+      <div class="ctl-sel-img sw-1"></div>
+      <div class="ctl-sel-name">Caristo Armchair (selected)</div>
+      <div class="ctl-sel-price">$750</div>
     </div>
     <div class="ctl-section">
       <div class="ctl-section-label">Lighting</div>
-      <div class="ctl-items-row">
-        <div class="ctl-item" onclick="toggleCtlItem(this)"><div class="ctl-item-img ci-1"></div><div class="ctl-item-info"><div class="ctl-item-name">Arch Floor Lamp</div><div class="ctl-item-price">$250</div><div class="ctl-item-add">+ Add</div></div></div>
-        <div class="ctl-item on selected" onclick="toggleCtlItem(this)"><div class="ctl-item-img ci-2"></div><div class="ctl-item-info"><div class="ctl-item-name">Brass Table Lamp</div><div class="ctl-item-price">$890</div><div class="ctl-item-add">✓ Added</div></div></div>
-        <div class="ctl-item" onclick="toggleCtlItem(this)"><div class="ctl-item-img ci-1"></div><div class="ctl-item-info"><div class="ctl-item-name">Sconce Pair</div><div class="ctl-item-price">$320</div><div class="ctl-item-add">+ Add</div></div></div>
+      <div class="ctl-row">
+        <div class="ctl-item" onclick="toggleCtl(this)"><div class="ctl-item-img ci-1"></div><div class="ctl-item-body"><div class="ctl-item-name">Arch Floor Lamp</div><div class="ctl-item-price">$250</div><div class="ctl-item-action">+ Add</div></div></div>
+        <div class="ctl-item on" onclick="toggleCtl(this)"><div class="ctl-item-img ci-2"></div><div class="ctl-item-body"><div class="ctl-item-name">Brass Table Lamp</div><div class="ctl-item-price">$890</div><div class="ctl-item-action">✓ Added</div></div></div>
+        <div class="ctl-item" onclick="toggleCtl(this)"><div class="ctl-item-img ci-1"></div><div class="ctl-item-body"><div class="ctl-item-name">Sconce Pair</div><div class="ctl-item-price">$320</div><div class="ctl-item-action">+ Add</div></div></div>
       </div>
     </div>
     <div class="ctl-section">
       <div class="ctl-section-label">Tables & Storage</div>
-      <div class="ctl-items-row">
-        <div class="ctl-item on selected" onclick="toggleCtlItem(this)"><div class="ctl-item-img ci-3"></div><div class="ctl-item-info"><div class="ctl-item-name">Walnut Side Table</div><div class="ctl-item-price">$299</div><div class="ctl-item-add">✓ Added</div></div></div>
-        <div class="ctl-item" onclick="toggleCtlItem(this)"><div class="ctl-item-img ci-4"></div><div class="ctl-item-info"><div class="ctl-item-name">Bookcase Unit</div><div class="ctl-item-price">$800</div><div class="ctl-item-add">+ Add</div></div></div>
-        <div class="ctl-item" onclick="toggleCtlItem(this)"><div class="ctl-item-img ci-5"></div><div class="ctl-item-info"><div class="ctl-item-name">Console Table</div><div class="ctl-item-price">$549</div><div class="ctl-item-add">+ Add</div></div></div>
+      <div class="ctl-row">
+        <div class="ctl-item on" onclick="toggleCtl(this)"><div class="ctl-item-img ci-3"></div><div class="ctl-item-body"><div class="ctl-item-name">Walnut Side Table</div><div class="ctl-item-price">$299</div><div class="ctl-item-action">✓ Added</div></div></div>
+        <div class="ctl-item" onclick="toggleCtl(this)"><div class="ctl-item-img ci-4"></div><div class="ctl-item-body"><div class="ctl-item-name">Bookcase Unit</div><div class="ctl-item-price">$800</div><div class="ctl-item-action">+ Add</div></div></div>
+        <div class="ctl-item" onclick="toggleCtl(this)"><div class="ctl-item-img ci-5"></div><div class="ctl-item-body"><div class="ctl-item-name">Console Table</div><div class="ctl-item-price">$549</div><div class="ctl-item-action">+ Add</div></div></div>
       </div>
     </div>
     <div class="ctl-section">
-      <div class="ctl-section-label">Textiles & Accessories</div>
-      <div class="ctl-items-row">
-        <div class="ctl-item" onclick="toggleCtlItem(this)"><div class="ctl-item-img ci-6"></div><div class="ctl-item-info"><div class="ctl-item-name">Woven Throw</div><div class="ctl-item-price">$140</div><div class="ctl-item-add">+ Add</div></div></div>
-        <div class="ctl-item" onclick="toggleCtlItem(this)"><div class="ctl-item-img ci-2"></div><div class="ctl-item-info"><div class="ctl-item-name">Amber Candle</div><div class="ctl-item-price">$95</div><div class="ctl-item-add">+ Add</div></div></div>
-        <div class="ctl-item" onclick="toggleCtlItem(this)"><div class="ctl-item-img ci-3"></div><div class="ctl-item-info"><div class="ctl-item-name">Ceramic Vase</div><div class="ctl-item-price">$180</div><div class="ctl-item-add">+ Add</div></div></div>
+      <div class="ctl-section-label">Textiles & Scent</div>
+      <div class="ctl-row">
+        <div class="ctl-item" onclick="toggleCtl(this)"><div class="ctl-item-img ci-6"></div><div class="ctl-item-body"><div class="ctl-item-name">Woven Throw</div><div class="ctl-item-price">$140</div><div class="ctl-item-action">+ Add</div></div></div>
+        <div class="ctl-item" onclick="toggleCtl(this)"><div class="ctl-item-img ci-2"></div><div class="ctl-item-body"><div class="ctl-item-name">Amber Candle</div><div class="ctl-item-price">$95</div><div class="ctl-item-action">+ Add</div></div></div>
+        <div class="ctl-item" onclick="toggleCtl(this)"><div class="ctl-item-img ci-3"></div><div class="ctl-item-body"><div class="ctl-item-name">Ceramic Vase</div><div class="ctl-item-price">$180</div><div class="ctl-item-action">+ Add</div></div></div>
       </div>
     </div>
-    <div class="cart-summary-bar" style="margin-bottom:16px;">
-      <div class="csb-title">Your Selection</div>
-      <div class="csb-items">
-        <div class="csb-item"><span class="csb-item-name">Caristo Armchair</span><span class="csb-item-price">$750</span></div>
-        <div class="csb-item"><span class="csb-item-name">Brass Table Lamp</span><span class="csb-item-price">$890</span></div>
-        <div class="csb-item"><span class="csb-item-name">Walnut Side Table</span><span class="csb-item-price">$299</span></div>
-      </div>
-      <div class="csb-divider"></div>
-      <div class="csb-total"><span class="csb-total-label">Total</span><span class="csb-total-val">$1,939</span></div>
+    <div class="cart-summary">
+      <div class="cs-title">Your Selection</div>
+      <div class="cs-row"><span class="cs-row-name">Caristo Armchair</span><span class="cs-row-price">$750</span></div>
+      <div class="cs-row"><span class="cs-row-name">Brass Table Lamp</span><span class="cs-row-price">$890</span></div>
+      <div class="cs-row"><span class="cs-row-name">Walnut Side Table</span><span class="cs-row-price">$299</span></div>
+      <div class="cs-divider"></div>
+      <div class="cs-total"><span class="cs-total-label">Total</span><span class="cs-total-val">$1,939</span></div>
     </div>
-    <button class="scan-next-btn" onclick="goToScanStep(5)">
-      Proceed to Checkout
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </button>
-    <span class="scan-back-link" onclick="goToScanStep(3)">← Back to Looks for Less</span>
+    <button class="next-btn" onclick="gotoStep(5)">Proceed to Checkout <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+    <span class="back-link" onclick="gotoStep(3)">← Back</span>
   </div>
 
-  <!-- STEP 5: Checkout -->
-  <div class="scan-step-panel" id="scan-panel-5">
-    <div class="scan-header">
-      <div class="scan-step-label">Step 5 of 5</div>
-      <div class="scan-title">Checkout</div>
-      <div class="scan-sub">Review your order and complete your purchase securely.</div>
+  <!-- Step 5 -->
+  <div class="step-panel" id="sp5">
+    <div class="step-head">
+      <div class="step-label">Step 5 of 5</div>
+      <div class="step-title">Checkout</div>
+      <div class="step-sub">Review your order and complete your purchase securely.</div>
     </div>
-    <div class="checkout-wrap">
-      <div class="checkout-section">
-        <div class="co-section-label">Shipping</div>
-        <div class="co-row" onclick="showToast('Add shipping address')">
-          <div class="co-row-left"><div class="co-row-icon">🏠</div><div class="co-row-text"><div class="co-row-label">Deliver to</div><div class="co-row-value">Add shipping address</div></div></div>
-          <span class="co-row-arrow">›</span>
-        </div>
-      </div>
-      <div class="checkout-section">
-        <div class="co-section-label">Payment</div>
-        <div class="co-row" onclick="showToast('Add payment info')">
-          <div class="co-row-left"><div class="co-row-icon">💳</div><div class="co-row-text"><div class="co-row-label">Pay with</div><div class="co-row-value">Add payment method</div></div></div>
-          <span class="co-row-arrow">›</span>
-        </div>
-        <div class="co-row" onclick="showToast('American Express accepted')">
-          <div class="co-row-left"><div class="co-row-icon">✦</div><div class="co-row-text"><div class="co-row-label">Preferred</div><div class="co-row-value">American Express</div></div></div>
-          <span class="co-row-arrow">›</span>
-        </div>
-      </div>
-      <div class="checkout-section">
-        <div class="co-section-label">Order Summary</div>
-        <div class="co-order-items">
-          <div class="co-order-item"><div class="co-item-img coi-1"></div><div class="co-item-info"><div class="co-item-name">Caristo Armchair</div><div class="co-item-hotel">ART LAB · Rosewood SP</div></div><div class="co-item-price">$750</div></div>
-          <div class="co-order-item"><div class="co-item-img coi-2"></div><div class="co-item-info"><div class="co-item-name">Brass Table Lamp</div><div class="co-item-hotel">Porta Romana · Aman NY</div></div><div class="co-item-price">$890</div></div>
-          <div class="co-order-item"><div class="co-item-img coi-3"></div><div class="co-item-info"><div class="co-item-name">Walnut Side Table</div><div class="co-item-hotel">De La Espada · Connaught</div></div><div class="co-item-price">$299</div></div>
-        </div>
-        <div class="co-totals">
-          <div class="co-total-row"><span class="co-total-label">Subtotal</span><span class="co-total-val">$1,939.00</span></div>
-          <div class="co-total-row"><span class="co-total-label">Shipping</span><span class="co-total-val">$0.00</span></div>
-          <div class="co-total-row"><span class="co-total-label">Tax</span><span class="co-total-val">$0.00</span></div>
-          <div class="co-total-row"><span class="co-total-label">Total</span><span class="co-total-val">$1,939.00</span></div>
-        </div>
-        <button class="co-submit-btn" onclick="submitOrder()">Submit Order</button>
-        <div class="co-guest-link">Already have an account? <span onclick="showToast('Sign in coming soon')">Sign In</span> · <span onclick="showToast('Guest checkout coming soon')">Checkout as Guest</span></div>
-      </div>
+    <div class="co-section">
+      <div class="co-label">Shipping</div>
+      <div class="co-row" onclick="toast('Add shipping address')"><div class="co-row-left"><div class="co-icon">🏠</div><div><div class="co-row-lbl">Deliver to</div><div class="co-row-val">Add shipping address</div></div></div><span class="co-row-arrow">›</span></div>
     </div>
-    <span class="scan-back-link" onclick="goToScanStep(4)">← Back to Complete the Look</span>
+    <div class="co-section">
+      <div class="co-label">Payment</div>
+      <div class="co-row" onclick="toast('Add payment method')"><div class="co-row-left"><div class="co-icon">💳</div><div><div class="co-row-lbl">Pay with</div><div class="co-row-val">Add payment method</div></div></div><span class="co-row-arrow">›</span></div>
+      <div class="co-row" onclick="toast('American Express — preferred partner ✦')"><div class="co-row-left"><div class="co-icon">✦</div><div><div class="co-row-lbl">Preferred partner</div><div class="co-row-val">American Express</div></div></div><span class="co-row-arrow">›</span></div>
+    </div>
+    <div class="co-section">
+      <div class="co-label">Order Summary</div>
+      <div class="co-items">
+        <div class="co-item"><div class="co-item-img coi-1"></div><div><div class="co-item-name">Caristo Armchair</div><div class="co-item-hotel">ART LAB · Rosewood SP</div></div><div class="co-item-price">$750</div></div>
+        <div class="co-item"><div class="co-item-img coi-2"></div><div><div class="co-item-name">Brass Floor Lamp</div><div class="co-item-hotel">Porta Romana · Aman NY</div></div><div class="co-item-price">$890</div></div>
+        <div class="co-item"><div class="co-item-img coi-3"></div><div><div class="co-item-name">Walnut Side Table</div><div class="co-item-hotel">De La Espada · Connaught</div></div><div class="co-item-price">$299</div></div>
+      </div>
+      <div class="co-totals">
+        <div class="co-total-row"><span class="co-total-lbl">Subtotal</span><span class="co-total-val">$1,939.00</span></div>
+        <div class="co-total-row"><span class="co-total-lbl">Shipping</span><span class="co-total-val">Free</span></div>
+        <div class="co-total-row"><span class="co-total-lbl">Tax</span><span class="co-total-val">$0.00</span></div>
+        <div class="co-total-row"><span class="co-total-lbl">Total</span><span class="co-total-val">$1,939.00</span></div>
+      </div>
+      <button class="submit-btn" onclick="submitOrder()">Submit Order</button>
+      <div class="co-guest">Already have an account? <span onclick="toast('Sign in coming soon')">Sign In</span> · <span onclick="toast('Guest checkout coming soon')">Guest</span></div>
+    </div>
+    <span class="back-link" onclick="gotoStep(4)">← Back to Complete the Look</span>
   </div>
 
-  <!-- ORDER SUCCESS -->
-  <div class="scan-step-panel" id="scan-panel-success">
-    <div class="order-success">
+  <!-- Success -->
+  <div class="step-panel" id="sp-ok">
+    <div class="success-wrap">
       <div class="success-icon">✓</div>
       <div class="success-title">Order Placed!</div>
-      <div class="success-sub">Your Hand Selected pieces are confirmed. You'll receive a tracking update within 24 hours.</div>
-      <div class="success-order-num">Order Number</div>
-      <div class="success-num">#HS-20260222</div>
-      <button class="success-btn" onclick="goToScanStep(1);switchScreen('screen-home',document.getElementById('tab-home'))">Continue Shopping</button>
+      <div class="success-sub">Your Hand Selected pieces are confirmed. You will receive a tracking update within 24 hours.</div>
+      <div class="success-order-label">Order Number</div>
+      <div class="success-order-num">#HS-20260222</div>
+      <button class="next-btn" style="width:100%;margin:0;" onclick="goTo('s-home','tab-home');resetScan()">Continue Shopping</button>
     </div>
   </div>
 </div>
 
-
-<!-- ══ SCREEN: AI MOODBOARD ══ -->
-<div class="screen dark" id="screen-moodboard">
-  <div class="status-bar" style="background:var(--ink);"></div>
-  <div class="top-bar dark">
-    <div class="top-bar-logo light">AI <span>Moodboard</span></div>
-    <button class="icon-btn light" onclick="showToast('Upload your room photo to get started')">
+<!-- ════════════════════════
+     AI MOODBOARD
+════════════════════════ -->
+<div class="screen screen-dark" id="s-moodboard">
+  <div class="sb"></div>
+  <div class="topbar topbar-dark">
+    <div class="logo logo-light">AI <span>Moodboard</span></div>
+    <button class="ibtn ibtn-light" onclick="toast('Upload your room to get started')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
     </button>
   </div>
 
-  <div id="mbIntro" style="padding:0 20px 20px;">
-    <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">Powered by AI</div>
-    <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--cream);line-height:1.2;margin-bottom:8px;">See your cart in<br>your actual home.</div>
-    <div style="font-size:12px;color:rgba(245,240,232,0.5);line-height:1.7;">Upload a photo of your living room and our AI will show you exactly how to position your Hand Selected items — with personalized styling advice for your specific space.</div>
+  <div class="mb-intro" id="mbIntro">
+    <div class="mb-eyebrow">Powered by AI</div>
+    <div class="mb-title">See your cart in<br>your actual home.</div>
+    <div class="mb-sub">Upload a photo of your living room and our AI will show you exactly how to position your Hand Selected items — with personalized styling advice.</div>
   </div>
 
-  <div id="uploadZone" style="margin:0 20px 20px;border:1.5px dashed rgba(201,169,110,0.4);border-radius:20px;padding:32px 24px;display:flex;flex-direction:column;align-items:center;gap:12px;cursor:pointer;background:rgba(245,240,232,0.03);position:relative;" onclick="document.getElementById('roomUpload').click()">
-    <input type="file" accept="image/*" id="roomUpload" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;" onchange="handleRoomUpload(event)">
-    <div style="width:52px;height:52px;border-radius:50%;background:rgba(201,169,110,0.12);border:1px solid rgba(201,169,110,0.25);display:flex;align-items:center;justify-content:center;font-size:24px;">🛋️</div>
-    <div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--cream);">Upload Your Room</div>
-    <div style="font-size:11px;color:rgba(245,240,232,0.4);text-align:center;line-height:1.6;">Tap to upload a photo of your living room, bedroom, or any space you are decorating</div>
+  <div class="upload-zone" id="mbUploadZone" onclick="document.getElementById('roomFile').click()">
+    <input type="file" id="roomFile" accept="image/*" style="display:none;" onchange="handleUpload(event)">
+    <div class="upload-icon-wrap">🛋️</div>
+    <div class="upload-title">Upload Your Room</div>
+    <div class="upload-sub">Tap to upload a photo of your living room, bedroom, or any space you are decorating</div>
   </div>
 
-  <div id="mbBtnRow" style="display:flex;gap:10px;margin:0 20px 20px;">
-    <button style="flex:1;padding:14px;border-radius:14px;background:var(--gold);color:var(--ink);border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:500;display:flex;align-items:center;justify-content:center;gap:8px;" onclick="document.getElementById('roomUpload').click()">📷 Upload Photo</button>
-    <button style="flex:1;padding:14px;border-radius:14px;background:rgba(245,240,232,0.07);border:1px solid rgba(245,240,232,0.15);color:var(--cream);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:8px;" onclick="document.getElementById('roomUpload').click()">📸 Take Photo</button>
+  <div class="upload-btns" id="mbUploadBtns">
+    <button class="upload-btn upload-btn-gold" onclick="document.getElementById('roomFile').click()">📷 Upload Photo</button>
+    <button class="upload-btn upload-btn-ghost" onclick="document.getElementById('roomFile').click()">📸 Take Photo</button>
   </div>
 
-  <div id="roomPreview" style="display:none;margin:0 20px 16px;border-radius:16px;overflow:hidden;aspect-ratio:4/3;position:relative;">
-    <img id="roomPreviewImg" style="width:100%;height:100%;object-fit:cover;" src="" alt="Your room">
-    <div style="position:absolute;top:12px;left:12px;background:rgba(22,18,16,0.85);backdrop-filter:blur(8px);border:1px solid rgba(201,169,110,0.3);padding:5px 12px;border-radius:20px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);">Your Room</div>
-    <div style="position:absolute;top:38%;left:22%;width:30px;height:30px;border:1.5px solid var(--gold);border-radius:50%;background:rgba(201,169,110,0.18);display:flex;align-items:center;justify-content:center;animation:pulse 2s ease-in-out infinite;cursor:pointer;" onclick="showToast('Caristo Armchair — Place here')"><div style="width:8px;height:8px;background:var(--gold);border-radius:50%;"></div></div>
-    <div style="position:absolute;top:28%;right:26%;width:30px;height:30px;border:1.5px solid var(--gold);border-radius:50%;background:rgba(201,169,110,0.18);display:flex;align-items:center;justify-content:center;animation:pulse 2s ease-in-out infinite 0.6s;cursor:pointer;" onclick="showToast('Brass Lamp — Corner spot')"><div style="width:8px;height:8px;background:var(--gold);border-radius:50%;"></div></div>
-    <div style="position:absolute;bottom:33%;left:52%;width:30px;height:30px;border:1.5px solid var(--gold);border-radius:50%;background:rgba(201,169,110,0.18);display:flex;align-items:center;justify-content:center;animation:pulse 2s ease-in-out infinite 1.2s;cursor:pointer;" onclick="showToast('Side Table — Next to seating')"><div style="width:8px;height:8px;background:var(--gold);border-radius:50%;"></div></div>
+  <div class="room-preview-wrap" id="mbRoomPreview">
+    <img id="roomPreviewImg" src="" alt="Your room">
+    <div class="room-label">Your Room</div>
+    <div class="room-pin" style="top:40%;left:22%;" onclick="toast('Caristo Armchair — place here')"></div>
+    <div class="room-pin" style="top:28%;right:26%;animation-delay:0.6s;" onclick="toast('Brass Lamp — corner spot')"></div>
+    <div class="room-pin" style="bottom:32%;left:54%;animation-delay:1.2s;" onclick="toast('Side Table — next to seating')"></div>
   </div>
 
-  <div id="aiGenerating" style="display:none;margin:0 20px;flex-direction:column;align-items:center;gap:16px;padding:32px;background:rgba(245,240,232,0.03);border:1px solid rgba(201,169,110,0.25);border-radius:20px;">
-    <div style="width:48px;height:48px;border-radius:50%;border:2px solid rgba(201,169,110,0.2);border-top-color:var(--gold);animation:spin 1s linear infinite;"></div>
-    <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--cream);text-align:center;">Analyzing your space...</div>
-    <div style="font-size:11px;color:rgba(245,240,232,0.4);text-align:center;line-height:1.6;">Our AI is studying your room layout, lighting, and aesthetic to create a personalized moodboard.</div>
+  <div class="ai-gen" id="mbAiGen">
+    <div class="ai-spinner ai-spin" style="width:46px;height:46px;border-radius:50%;border:2px solid rgba(201,169,110,0.2);border-top-color:var(--gold);flex-shrink:0;"></div>
+    <div class="ai-gen-title">Analyzing your space...</div>
+    <div class="ai-gen-sub">Our AI is studying your room layout, lighting, and aesthetic to create your personalized moodboard.</div>
   </div>
 
-  <div id="moodboardResult" style="display:none;padding:0 20px;">
-    <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--cream);margin-bottom:4px;">Your Styled Space</div>
-    <div style="font-size:11px;color:rgba(245,240,232,0.45);margin-bottom:16px;line-height:1.6;">Based on your room's palette and layout, here is how to position your Hand Selected pieces.</div>
-
-    <div style="background:rgba(245,240,232,0.04);border:1px solid rgba(201,169,110,0.25);border-radius:16px;padding:18px;margin-bottom:16px;">
-      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;">✦ AI Stylist</div>
-      <div id="mbAiBody" style="font-size:13px;color:rgba(245,240,232,0.75);line-height:1.8;font-family:'Cormorant Garamond',serif;font-style:italic;">"Your space has beautiful natural light and a warm neutral base that will make the Caristo Armchair shine. Position it near the window to create an inviting reading corner. The Brass Table Lamp belongs on the side table to your right — it will cast a warm evening glow that complements your existing tones perfectly."</div>
+  <div class="mb-result" id="mbResult">
+    <div class="mb-result-title">Your Styled Space</div>
+    <div class="mb-result-sub">Based on your room palette and layout, here is how to position your Hand Selected pieces.</div>
+    <div class="mb-ai-card">
+      <div class="mb-ai-eyebrow">✦ AI Stylist</div>
+      <div class="mb-ai-quote" id="mbQuote">"Your space has beautiful natural light and a warm neutral base that will make the Caristo Armchair shine. Position it near the window to create an inviting reading corner. The Brass Lamp belongs on the side table to your right — it will cast a warm evening glow that complements your existing tones perfectly."</div>
     </div>
-
-    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
-      <div style="display:flex;gap:12px;align-items:center;background:rgba(245,240,232,0.04);border:1px solid rgba(245,240,232,0.07);border-radius:12px;padding:12px;">
-        <div style="width:52px;height:52px;border-radius:8px;flex-shrink:0;background:linear-gradient(135deg,#8B6E52,#6B4E35);"></div>
-        <div style="flex:1;">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--cream);margin-bottom:3px;">Caristo Armchair</div>
-          <div style="font-size:11px;color:rgba(245,240,232,0.5);line-height:1.5;">Position near your window for natural light. Face toward the room center for conversation flow.</div>
-          <div style="font-size:10px;color:var(--gold);margin-top:3px;">📍 Northwest corner, facing southeast</div>
-        </div>
-      </div>
-      <div style="display:flex;gap:12px;align-items:center;background:rgba(245,240,232,0.04);border:1px solid rgba(245,240,232,0.07);border-radius:12px;padding:12px;">
-        <div style="width:52px;height:52px;border-radius:8px;flex-shrink:0;background:linear-gradient(135deg,#2A3540,#3D5060);"></div>
-        <div style="flex:1;">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--cream);margin-bottom:3px;">Brass Floor Lamp</div>
-          <div style="font-size:11px;color:rgba(245,240,232,0.5);line-height:1.5;">Place behind and to the right of the armchair. Creates layered lighting and visual height.</div>
-          <div style="font-size:10px;color:var(--gold);margin-top:3px;">📍 Behind seating area, right side</div>
-        </div>
-      </div>
-      <div style="display:flex;gap:12px;align-items:center;background:rgba(245,240,232,0.04);border:1px solid rgba(245,240,232,0.07);border-radius:12px;padding:12px;">
-        <div style="width:52px;height:52px;border-radius:8px;flex-shrink:0;background:linear-gradient(135deg,#E0D8CC,#C8BCAC);"></div>
-        <div style="flex:1;">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--cream);margin-bottom:3px;">Walnut Side Table</div>
-          <div style="font-size:11px;color:rgba(245,240,232,0.5);line-height:1.5;">Directly beside the armchair at seat height. Style with the amber candle and a single book.</div>
-          <div style="font-size:10px;color:var(--gold);margin-top:3px;">📍 Right of armchair, within reach</div>
-        </div>
-      </div>
-    </div>
-
-    <button onclick="regenerateMoodboard()" style="width:100%;padding:14px;background:rgba(201,169,110,0.1);border:1px solid rgba(201,169,110,0.25);border-radius:14px;color:var(--gold);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">✦ Regenerate Layout</button>
-    <button onclick="switchScreen('screen-scan',null);goToScanStep(1);" style="width:100%;padding:16px;background:var(--gold);color:var(--ink);border:none;border-radius:14px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:500;margin-bottom:16px;">Shop These Items →</button>
+    <div class="mb-placement"><div class="mb-placement-img mbi-1"></div><div><div class="mb-placement-name">Caristo Armchair</div><div class="mb-placement-tip">Position near your window for natural light. Face toward the room center for conversation flow.</div><div class="mb-placement-pos">📍 Northwest corner, facing southeast</div></div></div>
+    <div class="mb-placement"><div class="mb-placement-img mbi-2"></div><div><div class="mb-placement-name">Brass Floor Lamp</div><div class="mb-placement-tip">Place behind and to the right of the armchair. Creates layered lighting and visual height.</div><div class="mb-placement-pos">📍 Behind seating, right side</div></div></div>
+    <div class="mb-placement"><div class="mb-placement-img mbi-3"></div><div><div class="mb-placement-name">Walnut Side Table</div><div class="mb-placement-tip">Directly beside the armchair at seat height. Style with the amber candle and a single book.</div><div class="mb-placement-pos">📍 Right of armchair, within reach</div></div></div>
+    <button class="mb-regen" onclick="regenMoodboard()">✦ Regenerate Layout</button>
+    <button class="next-btn" style="margin:0 0 16px;" onclick="goTo('s-scan',null);gotoStep(1)">Shop These Items <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
   </div>
 </div>
 
-<!-- ══ SCREEN: HOTELS ══ -->
-<div class="screen" id="screen-hotels">
-  <div class="status-bar"></div>
-  <div class="top-bar"><div class="top-bar-logo">Hotels</div><button class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button></div>
-  <div class="hotels-list">
-    <div class="hotel-full-card hfc-1" onclick="showToast('Loading Rosewood São Paulo...')"><div class="hfc-badge">Exclusive</div><div class="hfc-overlay"><div class="hfc-name">Rosewood São Paulo</div><div class="hfc-loc">São Paulo, Brazil</div><div class="hfc-foot"><span class="hfc-count">47 items available</span><div class="hfc-arrow">→</div></div></div></div>
-    <div class="hotel-full-card hfc-2" onclick="showToast('Loading Aman New York...')"><div class="hfc-badge">New</div><div class="hfc-overlay"><div class="hfc-name">Aman New York</div><div class="hfc-loc">New York, USA</div><div class="hfc-foot"><span class="hfc-count">31 items available</span><div class="hfc-arrow">→</div></div></div></div>
-    <div class="hotel-full-card hfc-3" onclick="showToast('Loading The Connaught...')"><div class="hfc-overlay"><div class="hfc-name">The Connaught</div><div class="hfc-loc">London, UK</div><div class="hfc-foot"><span class="hfc-count">28 items available</span><div class="hfc-arrow">→</div></div></div></div>
-    <div class="hotel-full-card hfc-4" onclick="showToast('Loading 1 Hotel South Beach...')"><div class="hfc-badge" style="background:var(--gold);color:var(--ink)">Sustainable</div><div class="hfc-overlay"><div class="hfc-name">1 Hotel South Beach</div><div class="hfc-loc">Miami Beach, USA</div><div class="hfc-foot"><span class="hfc-count">38 items available</span><div class="hfc-arrow">→</div></div></div></div>
-    <div class="hotel-full-card hfc-5" onclick="showToast('Loading Four Seasons Florence...')"><div class="hfc-overlay"><div class="hfc-name">Four Seasons Florence</div><div class="hfc-loc">Florence, Italy</div><div class="hfc-foot"><span class="hfc-count">52 items available</span><div class="hfc-arrow">→</div></div></div></div>
+<!-- ════════════════════════
+     HOTELS
+════════════════════════ -->
+<div class="screen screen-light" id="s-hotels">
+  <div class="sb"></div>
+  <div class="topbar topbar-light"><div class="logo logo-dark">Hotels</div></div>
+  <div class="hotel-card hc-1" onclick="toast('Loading Rosewood São Paulo...')"><div class="hc-badge">Exclusive</div><div class="hc-overlay"><div class="hc-name">Rosewood São Paulo</div><div class="hc-loc">São Paulo, Brazil</div><div class="hc-foot"><span class="hc-count">47 items</span><div class="hc-arrow">→</div></div></div></div>
+  <div class="hotel-card hc-2" onclick="toast('Loading Aman New York...')"><div class="hc-badge">New</div><div class="hc-overlay"><div class="hc-name">Aman New York</div><div class="hc-loc">New York, USA</div><div class="hc-foot"><span class="hc-count">31 items</span><div class="hc-arrow">→</div></div></div></div>
+  <div class="hotel-card hc-3" onclick="toast('Loading The Connaught...')"><div class="hc-overlay"><div class="hc-name">The Connaught</div><div class="hc-loc">London, UK</div><div class="hc-foot"><span class="hc-count">28 items</span><div class="hc-arrow">→</div></div></div></div>
+  <div class="hotel-card hc-4" onclick="toast('Loading 1 Hotel South Beach...')"><div class="hc-badge" style="background:var(--gold-lt);color:var(--ink)">Sustainable</div><div class="hc-overlay"><div class="hc-name">1 Hotel South Beach</div><div class="hc-loc">Miami Beach, USA</div><div class="hc-foot"><span class="hc-count">38 items</span><div class="hc-arrow">→</div></div></div></div>
+  <div class="hotel-card hc-5" onclick="toast('Loading Four Seasons Florence...')"><div class="hc-overlay"><div class="hc-name">Four Seasons Florence</div><div class="hc-loc">Florence, Italy</div><div class="hc-foot"><span class="hc-count">52 items</span><div class="hc-arrow">→</div></div></div></div>
+</div>
+
+<!-- ════════════════════════
+     WISHLIST
+════════════════════════ -->
+<div class="screen screen-light" id="s-wishlist">
+  <div class="sb"></div>
+  <div class="topbar topbar-light"><div class="logo logo-dark">Saved</div></div>
+  <div class="wl-grid">
+    <div class="wl-card" onclick="openSheet('Linen Armchair','$2,400','Rosewood São Paulo','Furniture','Handcrafted Belgian linen armchair.','pi-1')"><div class="wl-img wl-1"></div><button class="wl-rm" onclick="event.stopPropagation();toast('Removed from saved')">×</button><div class="wl-info"><div class="wl-name">Linen Armchair</div><div class="wl-price">$2,400</div></div></div>
+    <div class="wl-card" onclick="openSheet('Brass Table Lamp','$890','Aman New York','Lighting','Brushed brass lamp.','pi-2')"><div class="wl-img wl-2"></div><button class="wl-rm" onclick="event.stopPropagation();toast('Removed from saved')">×</button><div class="wl-info"><div class="wl-name">Brass Table Lamp</div><div class="wl-price">$890</div></div></div>
+    <div class="wl-card" onclick="openSheet('Linen Bedding','$480','The Connaught','Linens','Egyptian cotton bedding.','pi-3')"><div class="wl-img wl-3"></div><button class="wl-rm" onclick="event.stopPropagation();toast('Removed from saved')">×</button><div class="wl-info"><div class="wl-name">Linen Bedding</div><div class="wl-price">$480</div></div></div>
+    <div class="wl-card" onclick="openSheet('Amber Candle','$95','Rosewood São Paulo','Candles','Signature hotel scent.','pi-5')"><div class="wl-img wl-4"></div><button class="wl-rm" onclick="event.stopPropagation();toast('Removed from saved')">×</button><div class="wl-info"><div class="wl-name">Amber Candle</div><div class="wl-price">$95</div></div></div>
   </div>
 </div>
 
-<!-- ══ SCREEN: WISHLIST ══ -->
-<div class="screen" id="screen-wishlist">
-  <div class="status-bar"></div>
-  <div class="top-bar"><div class="top-bar-logo">Saved</div></div>
-  <div class="wishlist-grid">
-    <div class="wishlist-card" onclick="openProductSheet('Linen Armchair','$2,400','Rosewood São Paulo','Furniture','Handcrafted Belgian linen armchair from the Rosewood São Paulo Garden Suites.','pc-1')"><div class="wc-img wc-1"></div><button class="wc-remove" onclick="event.stopPropagation();showToast('Removed from saved')">×</button><div class="wc-info"><div class="wc-name">Linen Armchair</div><div class="wc-price">$2,400</div></div></div>
-    <div class="wishlist-card" onclick="openProductSheet('Brass Table Lamp','$890','Aman New York','Lighting','Handcrafted brushed brass table lamp from the Aman New York guest suites.','pc-2')"><div class="wc-img wc-2"></div><button class="wc-remove" onclick="event.stopPropagation();showToast('Removed from saved')">×</button><div class="wc-info"><div class="wc-name">Brass Table Lamp</div><div class="wc-price">$890</div></div></div>
-    <div class="wishlist-card" onclick="openProductSheet('Linen Bedding Set','$480','The Connaught','Linens','600-thread count Egyptian cotton from The Connaught.','pc-3')"><div class="wc-img wc-3"></div><button class="wc-remove" onclick="event.stopPropagation();showToast('Removed from saved')">×</button><div class="wc-info"><div class="wc-name">Linen Bedding</div><div class="wc-price">$480</div></div></div>
-    <div class="wishlist-card" onclick="openProductSheet('Amber Candle','$95','Rosewood São Paulo','Candles','Signature scent of Rosewood SP.','pc-5')"><div class="wc-img wc-4"></div><button class="wc-remove" onclick="event.stopPropagation();showToast('Removed from saved')">×</button><div class="wc-info"><div class="wc-name">Amber Candle</div><div class="wc-price">$95</div></div></div>
-  </div>
-</div>
-
-<!-- ══ SCREEN: PROFILE ══ -->
-<div class="screen" id="screen-profile">
-  <div class="status-bar"></div>
-  <div class="top-bar"><div class="top-bar-logo">Profile</div></div>
-  <div class="profile-hero mb-20">
+<!-- ════════════════════════
+     PROFILE
+════════════════════════ -->
+<div class="screen screen-light" id="s-profile">
+  <div class="sb"></div>
+  <div class="topbar topbar-light"><div class="logo logo-dark">Profile</div></div>
+  <div class="profile-hero">
     <div class="profile-avatar">B</div>
     <div><div class="profile-name">Byron Cordero</div><div class="profile-member">Gold Member</div></div>
   </div>
-  <div class="profile-stats mb-20">
+  <div class="profile-stats">
     <div class="profile-stat"><div class="ps-num">12</div><div class="ps-label">Orders</div></div>
     <div class="profile-stat"><div class="ps-num">4</div><div class="ps-label">Saved</div></div>
     <div class="profile-stat"><div class="ps-num">7</div><div class="ps-label">Hotels</div></div>
   </div>
-  <div class="profile-menu mb-20">
-    <div class="profile-menu-item" onclick="showToast('Opening orders...')"><div class="pmi-left"><div class="pmi-icon">📦</div><span class="pmi-label">My Orders</span></div><span class="pmi-arrow">›</span></div>
-    <div class="profile-menu-item" onclick="switchScreen('screen-wishlist',document.getElementById('tab-wishlist'))"><div class="pmi-left"><div class="pmi-icon">♡</div><span class="pmi-label">Saved Items</span></div><span class="pmi-arrow">›</span></div>
-    <div class="profile-menu-item" onclick="showToast('Hotel visit history coming soon')"><div class="pmi-left"><div class="pmi-icon">🏨</div><span class="pmi-label">Hotel Visits</span></div><span class="pmi-arrow">›</span></div>
-    <div class="profile-menu-item" onclick="showToast('AR Viewer launching with iOS app!')"><div class="pmi-left"><div class="pmi-icon">✦</div><span class="pmi-label">AR Room Viewer</span></div><span class="pmi-arrow">›</span></div>
-    <div class="profile-menu-item" onclick="showToast('Referral program coming soon!')"><div class="pmi-left"><div class="pmi-icon">🎁</div><span class="pmi-label">Refer a Friend</span></div><span class="pmi-arrow">›</span></div>
-    <div class="profile-menu-item" onclick="showToast('Notification settings')"><div class="pmi-left"><div class="pmi-icon">🔔</div><span class="pmi-label">Notifications</span></div><span class="pmi-arrow">›</span></div>
-    <div class="profile-menu-item" onclick="showToast('Settings')"><div class="pmi-left"><div class="pmi-icon">⚙️</div><span class="pmi-label">Settings</span></div><span class="pmi-arrow">›</span></div>
+  <div class="profile-menu">
+    <div class="profile-item" onclick="toast('Opening orders...')"><div class="pi-left"><div class="pi-icon">📦</div><span class="pi-label">My Orders</span></div><span class="pi-arrow">›</span></div>
+    <div class="profile-item" onclick="goTo('s-wishlist','tab-wishlist')"><div class="pi-left"><div class="pi-icon">♡</div><span class="pi-label">Saved Items</span></div><span class="pi-arrow">›</span></div>
+    <div class="profile-item" onclick="goTo('s-moodboard','tab-moodboard')"><div class="pi-left"><div class="pi-icon">✦</div><span class="pi-label">AI Moodboard</span></div><span class="pi-arrow">›</span></div>
+    <div class="profile-item" onclick="toast('Hotel visit history coming soon')"><div class="pi-left"><div class="pi-icon">🏨</div><span class="pi-label">Hotel Visits</span></div><span class="pi-arrow">›</span></div>
+    <div class="profile-item" onclick="toast('Referral program coming soon!')"><div class="pi-left"><div class="pi-icon">🎁</div><span class="pi-label">Refer a Friend</span></div><span class="pi-arrow">›</span></div>
+    <div class="profile-item" onclick="toast('Notifications')"><div class="pi-left"><div class="pi-icon">🔔</div><span class="pi-label">Notifications</span></div><span class="pi-arrow">›</span></div>
+    <div class="profile-item" onclick="toast('Settings')"><div class="pi-left"><div class="pi-icon">⚙️</div><span class="pi-label">Settings</span></div><span class="pi-arrow">›</span></div>
   </div>
 </div>
 
-<!-- ══ BOTTOM TAB BAR ══ -->
-<div class="tab-bar">
-  <button class="tab-item active" id="tab-home" onclick="switchScreen('screen-home',this)">
+<!-- ════════════════════════
+     TAB BAR
+════════════════════════ -->
+<div class="tabbar">
+  <button class="tab active" id="tab-home" onclick="goTo('s-home',this.id)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    <span class="tab-label">Discover</span>
+    <span>Discover</span>
   </button>
-  <button class="tab-item" id="tab-hotels" onclick="switchScreen('screen-hotels',this)">
+  <button class="tab" id="tab-hotels" onclick="goTo('s-hotels',this.id)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><rect x="9" y="13" width="6" height="8"/></svg>
-    <span class="tab-label">Hotels</span>
+    <span>Hotels</span>
   </button>
-  <div class="tab-scan-btn" onclick="switchScreen('screen-scan',null);goToScanStep(1)">
+  <div class="scan-tab" onclick="goTo('s-scan',null);gotoStep(1)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
   </div>
-  <button class="tab-item" id="tab-moodboard" onclick="switchScreen('screen-moodboard',this)">
+  <button class="tab" id="tab-moodboard" onclick="goTo('s-moodboard',this.id)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-    <span class="tab-label">Moodboard</span>
+    <span>Moodboard</span>
   </button>
-  <button class="tab-item" id="tab-profile" onclick="switchScreen('screen-profile',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    <span class="tab-label">Profile</span>
+  <button class="tab" id="tab-wishlist" onclick="goTo('s-wishlist',this.id)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    <span>Saved</span>
   </button>
 </div>
 
-<!-- ══ PRODUCT DETAIL SHEET ══ -->
-<div class="sheet-backdrop" id="sheetBackdrop"   onclick="closeSheet()"></div>
-<div class="bottom-sheet" id="productSheet">
-  <div class="sheet-handle"></div>
-  <div class="sheet-img"><div class="sheet-img-bg" id="sheetImgBg" style="background:linear-gradient(145deg,#E8DDD0,#C4B098,#A8907A);"></div></div>
+<!-- ════════════════════════
+     PRODUCT SHEET
+════════════════════════ -->
+<div class="backdrop" id="backdrop" onclick="closeAll()"></div>
+<div class="sheet" id="prodSheet">
+  <div class="handle"></div>
+  <div class="sheet-img-wrap"><div id="sheetImgBg" style="width:100%;height:100%;background:linear-gradient(145deg,#E8DDD0,#C4B098);"></div></div>
   <div class="sheet-body">
     <div class="sheet-hotel-tag" id="sheetHotel">Hotel</div>
-    <div class="sheet-name" id="sheetName">Product</div>
-    <div class="sheet-category" id="sheetCat">Category</div>
-    <div class="sheet-price" id="sheetPrice">$0</div>
-    <p class="sheet-desc" id="sheetDesc">Description</p>
+    <div class="sheet-prod-name" id="sheetName">Product</div>
+    <div class="sheet-prod-cat" id="sheetCat">Category</div>
+    <div class="sheet-prod-price" id="sheetPrice">$0</div>
+    <p class="sheet-prod-desc" id="sheetDesc">Description</p>
     <div class="sheet-divider"></div>
     <div class="sheet-details">
-      <div class="sheet-detail"><div class="sd-label">Material</div><div class="sd-value">Belgian Linen</div></div>
-      <div class="sheet-detail"><div class="sd-label">Origin</div><div class="sd-value">Portugal</div></div>
-      <div class="sheet-detail"><div class="sd-label">Lead Time</div><div class="sd-value">4–6 weeks</div></div>
-      <div class="sheet-detail"><div class="sd-label">Availability</div><div class="sd-value">In Stock</div></div>
+      <div class="sheet-detail"><div class="detail-label">Material</div><div class="detail-val">Belgian Linen</div></div>
+      <div class="sheet-detail"><div class="detail-label">Origin</div><div class="detail-val">Portugal</div></div>
+      <div class="sheet-detail"><div class="detail-label">Lead Time</div><div class="detail-val">4–6 weeks</div></div>
+      <div class="sheet-detail"><div class="detail-label">Availability</div><div class="detail-val">In Stock</div></div>
     </div>
   </div>
-  <!-- Looks for Less inside sheet -->
-  <div class="sheet-lfl">
+  <div style="padding:0 0 6px;">
     <div class="sheet-lfl-title">Looks for Less</div>
     <div class="sheet-lfl-row">
-      <div class="sheet-lfl-item" onclick="addToCartM();showToast('Budget alternative added!')"><div class="slfl-img slfl-1"></div><div class="sheet-lfl-info"><div class="slfl-price">$399</div><div class="slfl-save">Save 83%</div></div></div>
-      <div class="sheet-lfl-item" onclick="addToCartM();showToast('Budget alternative added!')"><div class="slfl-img slfl-2"></div><div class="sheet-lfl-info"><div class="slfl-price">$249</div><div class="slfl-save">Save 90%</div></div></div>
-      <div class="sheet-lfl-item" onclick="addToCartM();showToast('Budget alternative added!')"><div class="slfl-img slfl-3"></div><div class="sheet-lfl-info"><div class="slfl-price">$480</div><div class="slfl-save">Save 80%</div></div></div>
+      <div class="slfl-card" onclick="addToCart();toast('Alternative added!')"><div class="slfl-img slfl-i1"></div><div class="slfl-body"><div class="slfl-price">$399</div><div class="slfl-save">Save 83%</div></div></div>
+      <div class="slfl-card" onclick="addToCart();toast('Alternative added!')"><div class="slfl-img slfl-i2"></div><div class="slfl-body"><div class="slfl-price">$249</div><div class="slfl-save">Save 90%</div></div></div>
+      <div class="slfl-card" onclick="addToCart();toast('Alternative added!')"><div class="slfl-img slfl-i3"></div><div class="slfl-body"><div class="slfl-price">$480</div><div class="slfl-save">Save 80%</div></div></div>
     </div>
   </div>
   <div class="sheet-actions">
     <button class="sheet-save-btn" onclick="saveItem()">♡</button>
-    <button class="sheet-scan-btn" onclick="closeSheet();switchScreen('screen-moodboard',document.getElementById('tab-moodboard'))">See in My Room</button>
-    <button class="sheet-add-btn" onclick="addToCartM();closeSheet()">Add to Bag</button>
+    <button class="sheet-room-btn" onclick="closeAll();goTo('s-moodboard','tab-moodboard')">See in My Room</button>
+    <button class="sheet-add-btn" onclick="addToCart();closeAll()">Add to Bag</button>
   </div>
 </div>
 
-<!-- ══ CART SHEET ══ -->
-<div class="bottom-sheet" id="cartSheet" style="background:var(--ink);">
-  <div class="sheet-handle" style="background:rgba(245,240,232,0.2);"></div>
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 20px 16px;">
-    <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--cream);">Your Bag <span style="font-family:'DM Sans';font-size:13px;color:var(--muted)" id="cartSheetCount">(3)</span></div>
-    <button style="background:rgba(245,240,232,0.1);border-radius:50%;width:30px;height:30px;border:none;cursor:pointer;font-size:16px;color:var(--muted);display:flex;align-items:center;justify-content:center;" onclick="closeCart()">×</button>
+<!-- ════════════════════════
+     CART SHEET
+════════════════════════ -->
+<div class="sheet sheet-dark" id="cartSheet">
+  <div class="handle handle-dark"></div>
+  <div class="cart-head">
+    <div class="cart-title">Your Bag <span style="font-family:'DM Sans',sans-serif;font-size:13px;color:var(--muted);" id="cartCount">(3)</span></div>
+    <button class="cart-close" onclick="closeAll()">×</button>
   </div>
-  <div style="flex:1;overflow-y:auto;padding:0 20px;max-height:40vh;">
-    <div style="display:flex;gap:14px;padding:12px 0;border-bottom:1px solid rgba(245,240,232,0.08);align-items:center;"><div style="width:72px;height:72px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,#8B6E52,#6B4E35);"></div><div style="flex:1;"><div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--cream);margin-bottom:2px;">Linen Armchair</div><div style="font-size:10px;color:var(--muted);margin-bottom:6px;">Rosewood São Paulo</div><div style="font-size:14px;color:var(--gold);font-family:'Cormorant Garamond',serif;">$2,400</div></div><button style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;">×</button></div>
-    <div style="display:flex;gap:14px;padding:12px 0;border-bottom:1px solid rgba(245,240,232,0.08);align-items:center;"><div style="width:72px;height:72px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,#2A3540,#3D5060);"></div><div style="flex:1;"><div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--cream);margin-bottom:2px;">Brass Table Lamp</div><div style="font-size:10px;color:var(--muted);margin-bottom:6px;">Aman New York</div><div style="font-size:14px;color:var(--gold);font-family:'Cormorant Garamond',serif;">$890</div></div><button style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;">×</button></div>
-    <div style="display:flex;gap:14px;padding:12px 0;align-items:center;"><div style="width:72px;height:72px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,#3D2820,#6B3D28);"></div><div style="flex:1;"><div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--cream);margin-bottom:2px;">Amber Candle</div><div style="font-size:10px;color:var(--muted);margin-bottom:6px;">Rosewood São Paulo</div><div style="font-size:14px;color:var(--gold);font-family:'Cormorant Garamond',serif;">$95</div></div><button style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;">×</button></div>
+  <div class="cart-items">
+    <div class="cart-item"><div class="cart-item-img cii-1"></div><div style="flex:1;"><div class="cart-item-name">Linen Armchair</div><div class="cart-item-hotel">Rosewood São Paulo</div><div class="cart-item-price">$2,400</div></div><button class="cart-rm" onclick="toast('Item removed')">×</button></div>
+    <div class="cart-item"><div class="cart-item-img cii-2"></div><div style="flex:1;"><div class="cart-item-name">Brass Table Lamp</div><div class="cart-item-hotel">Aman New York</div><div class="cart-item-price">$890</div></div><button class="cart-rm" onclick="toast('Item removed')">×</button></div>
+    <div class="cart-item"><div class="cart-item-img cii-3"></div><div style="flex:1;"><div class="cart-item-name">Amber Candle</div><div class="cart-item-hotel">Rosewood São Paulo</div><div class="cart-item-price">$95</div></div><button class="cart-rm" onclick="toast('Item removed')">×</button></div>
   </div>
-  <div style="padding:16px 20px;border-top:1px solid rgba(245,240,232,0.08);padding-bottom:calc(16px + var(--safe-bot));">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;"><span style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);">Total</span><span style="font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--gold);">$3,385</span></div>
-    <button style="width:100%;height:52px;background:var(--gold);color:var(--ink);border:none;border-radius:14px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;" onclick="switchScreen('screen-scan',null);goToScanStep(5);closeCart()">Proceed to Checkout</button>
+  <div class="cart-foot">
+    <div class="cart-total-row"><span class="cart-total-label">Total</span><span class="cart-total-amount">$3,385</span></div>
+    <button class="cart-checkout-btn" onclick="closeAll();goTo('s-scan',null);gotoStep(5)">Proceed to Checkout</button>
   </div>
 </div>
 
-<!-- ══ TOAST ══ -->
-<div class="m-toast" id="mToast"><span class="m-toast-dot"></span><span id="mToastMsg">Done</span></div>
+<!-- TOAST -->
+<div class="toast" id="toastEl"><span class="toast-dot"></span><span id="toastMsg">Done</span></div>
 
 <script>
-let cartCount = 3;
-let currentScanStep = 1;
+var cartNum = 3;
 
-function switchScreen(screenId, tabEl) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(screenId).classList.add('active');
-  if (tabEl) {
-    document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-    tabEl.classList.add('active');
+function goTo(screenId, tabId) {
+  // hide all screens
+  var screens = document.querySelectorAll('.screen');
+  for (var i = 0; i < screens.length; i++) {
+    screens[i].classList.remove('active');
   }
-  closeSheet(); closeCart();
+  // show target
+  document.getElementById(screenId).classList.add('active');
+  // update tabs
+  if (tabId) {
+    var tabs = document.querySelectorAll('.tab');
+    for (var i = 0; i < tabs.length; i++) {
+      tabs[i].classList.remove('active');
+    }
+    var el = document.getElementById(tabId);
+    if (el) el.classList.add('active');
+  }
+  closeAll();
 }
 
-function goToScanStep(step) {
-  // Hide all panels
-  document.querySelectorAll('.scan-step-panel').forEach(p => p.classList.remove('active'));
-  // Show target
-  const panel = document.getElementById('scan-panel-' + step) || document.getElementById('scan-panel-success');
-  if (panel) panel.classList.add('active');
-  currentScanStep = step;
-  // Update step dots
-  for (let i = 1; i <= 5; i++) {
-    const dot = document.getElementById('sdot-' + i);
-    const line = document.getElementById('sline-' + i);
+function gotoStep(n) {
+  var panels = document.querySelectorAll('.step-panel');
+  for (var i = 0; i < panels.length; i++) {
+    panels[i].classList.remove('active');
+  }
+  var target = document.getElementById('sp' + n) || document.getElementById('sp-ok');
+  if (target) target.classList.add('active');
+  for (var i = 1; i <= 5; i++) {
+    var dot = document.getElementById('sd' + i);
+    var line = document.getElementById('sl' + i);
     if (!dot) continue;
-    dot.classList.remove('active', 'done');
-    if (i < step) dot.classList.add('done');
-    else if (i === step) dot.classList.add('active');
+    dot.classList.remove('active','done');
+    if (i < n) dot.classList.add('done');
+    else if (i === n) dot.classList.add('active');
     if (line) {
       line.classList.remove('done');
-      if (i < step) line.classList.add('done');
+      if (i < n) line.classList.add('done');
     }
   }
-  // Scroll to top
-  document.getElementById('screen-scan').scrollTop = 0;
+  var scan = document.getElementById('s-scan');
+  if (scan) scan.scrollTop = 0;
+}
+
+function resetScan() {
+  document.getElementById('stepNav').style.display = 'flex';
+  gotoStep(1);
 }
 
 function submitOrder() {
-  cartCount = 0;
+  cartNum = 0;
   document.getElementById('cartBadge').textContent = '0';
   document.getElementById('cartCount').textContent = '(0)';
-  document.querySelectorAll('.scan-step-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('scan-panel-success').classList.add('active');
-  // Hide step nav for success
-  document.querySelector('.scan-steps-nav').style.display = 'none';
+  var panels = document.querySelectorAll('.step-panel');
+  for (var i = 0; i < panels.length; i++) {
+    panels[i].classList.remove('active');
+  }
+  document.getElementById('sp-ok').classList.add('active');
+  document.getElementById('stepNav').style.display = 'none';
 }
 
-function openProductSheet(name, price, hotel, cat, desc, imgClass) {
+function openSheet(name, price, hotel, cat, desc, imgClass) {
   document.getElementById('sheetName').textContent = name;
   document.getElementById('sheetPrice').textContent = price;
   document.getElementById('sheetHotel').textContent = hotel;
   document.getElementById('sheetCat').textContent = cat;
   document.getElementById('sheetDesc').textContent = desc;
-  const bg = document.getElementById('sheetImgBg');
-  bg.className = 'sheet-img-bg ' + imgClass;
-  bg.style.width = '100%'; bg.style.height = '100%';
-  document.getElementById('sheetBackdrop').classList.add('open');
-  document.getElementById('productSheet').classList.add('open');
-}
-
-function closeAll() { closeSheet(); closeCart(); }
-function closeSheet() {
-  document.getElementById('sheetBackdrop').classList.remove('open');
-  document.getElementById('productSheet').classList.remove('open');
-  document.getElementById('cartSheet').classList.remove('open');
+  var bg = document.getElementById('sheetImgBg');
+  bg.className = imgClass;
+  bg.style.width = '100%';
+  bg.style.height = '100%';
+  document.getElementById('backdrop').classList.add('open');
+  document.getElementById('prodSheet').classList.add('open');
 }
 
 function openCart() {
-  document.getElementById('sheetBackdrop').classList.add('open');
+  document.getElementById('backdrop').classList.add('open');
   document.getElementById('cartSheet').classList.add('open');
 }
 
-function closeCart() {
-  document.getElementById('sheetBackdrop').classList.remove('open');
+function closeAll() {
+  document.getElementById('backdrop').classList.remove('open');
+  document.getElementById('prodSheet').classList.remove('open');
   document.getElementById('cartSheet').classList.remove('open');
 }
 
-function addToCartM() {
-  cartCount++;
-  document.getElementById('cartBadge').textContent = cartCount;
-  document.getElementById('cartCount').textContent = '(' + cartCount + ')';
-  showToast('Added to your bag');
+function addToCart() {
+  cartNum++;
+  document.getElementById('cartBadge').textContent = cartNum;
+  document.getElementById('cartCount').textContent = '(' + cartNum + ')';
+  toast('Added to your bag ✓');
 }
 
-function saveItem() { showToast('Saved to wishlist ♡'); }
+function saveItem() { toast('Saved to wishlist ♡'); }
 
-function showToast(msg) {
-  const t = document.getElementById('mToast');
-  document.getElementById('mToastMsg').textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+function toast(msg) {
+  var el = document.getElementById('toastEl');
+  document.getElementById('toastMsg').textContent = msg;
+  el.classList.add('show');
+  setTimeout(function() { el.classList.remove('show'); }, 2500);
 }
 
-function filterCat(el) {
-  document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+function filterChip(el, label) {
+  var chips = document.querySelectorAll('.chip');
+  for (var i = 0; i < chips.length; i++) chips[i].classList.remove('active');
   el.classList.add('active');
-  showToast(el.textContent === 'All' ? 'Showing all items' : 'Filtered: ' + el.textContent);
+  toast(label === 'All' ? 'Showing all items' : 'Filtered: ' + label);
 }
 
 function toggleCheck(el) {
-  const check = el.querySelector('.ii-check');
-  check.classList.toggle('checked');
+  var check = el.querySelector('.id-check');
+  check.classList.toggle('on');
 }
 
-function toggleCtlItem(el) {
-  el.classList.toggle('selected');
-  const addEl = el.querySelector('.ctl-item-add');
-  if (el.classList.contains('selected')) {
-    addEl.textContent = '✓ Added';
-    addToCartM();
+function toggleCtl(el) {
+  el.classList.toggle('on');
+  var action = el.querySelector('.ctl-item-action');
+  if (el.classList.contains('on')) {
+    action.textContent = '✓ Added';
+    addToCart();
   } else {
-    addEl.textContent = '+ Add';
-    cartCount = Math.max(0, cartCount - 1);
-    document.getElementById('cartBadge').textContent = cartCount;
+    action.textContent = '+ Add';
+    cartNum = Math.max(0, cartNum - 1);
+    document.getElementById('cartBadge').textContent = cartNum;
+    document.getElementById('cartCount').textContent = '(' + cartNum + ')';
   }
 }
 
-// AI Moodboard functions
-function handleRoomUpload(event) {
-  const file = event.target.files[0];
+function handleUpload(event) {
+  var file = event.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
+  var reader = new FileReader();
   reader.onload = function(e) {
-    document.getElementById('uploadZone').style.display = 'none';
-    document.getElementById('mbBtnRow').style.display = 'none';
     document.getElementById('mbIntro').style.display = 'none';
-    const preview = document.getElementById('roomPreview');
+    document.getElementById('mbUploadZone').style.display = 'none';
+    document.getElementById('mbUploadBtns').style.display = 'none';
+    var preview = document.getElementById('mbRoomPreview');
     document.getElementById('roomPreviewImg').src = e.target.result;
     preview.style.display = 'block';
-    const gen = document.getElementById('aiGenerating');
+    var gen = document.getElementById('mbAiGen');
     gen.style.display = 'flex';
-    setTimeout(() => {
+    setTimeout(function() {
       gen.style.display = 'none';
-      document.getElementById('moodboardResult').style.display = 'block';
-      showToast('✦ Your moodboard is ready!');
+      document.getElementById('mbResult').style.display = 'block';
+      toast('✦ Your moodboard is ready!');
     }, 3000);
   };
   reader.readAsDataURL(file);
 }
 
-function regenerateMoodboard() {
-  document.getElementById('moodboardResult').style.display = 'none';
-  const gen = document.getElementById('aiGenerating');
+function regenMoodboard() {
+  document.getElementById('mbResult').style.display = 'none';
+  var gen = document.getElementById('mbAiGen');
   gen.style.display = 'flex';
-  const layouts = [
-    '"Your room's high ceilings create a wonderful canvas. Anchor the Caristo Armchair where morning light will highlight its linen texture. Layer the Brass Lamp behind for evening warmth."',
-    '"The warm tones in your space pair beautifully with the walnut pieces. Center the Side Table beside your main seating, and let the Brass Lamp create a soft triangle of light."',
-    '"Strong natural light is your greatest asset. Position the Caristo Armchair facing the light source so the Belgian linen glows. Add the Amber Candle as an evening counterpoint."'
+  var quotes = [
+    '"Your room\'s high ceilings create a wonderful canvas. Anchor the Caristo Armchair where morning light will highlight its linen texture. Layer the Brass Lamp behind for warm evening ambiance."',
+    '"The warm tones in your space pair beautifully with the walnut pieces. Center the Side Table beside your main seating and let the Brass Lamp create a soft triangle of light."',
+    '"Strong natural light is your greatest asset. Position the Caristo Armchair facing the light so the Belgian linen glows. Add the Amber Candle as a warm evening counterpoint."'
   ];
-  setTimeout(() => {
+  setTimeout(function() {
     gen.style.display = 'none';
-    document.getElementById('mbAiBody').textContent = layouts[Math.floor(Math.random() * layouts.length)];
-    document.getElementById('moodboardResult').style.display = 'block';
-    showToast('✦ New layout generated');
+    document.getElementById('mbQuote').textContent = quotes[Math.floor(Math.random() * quotes.length)];
+    document.getElementById('mbResult').style.display = 'block';
+    toast('✦ New layout generated');
   }, 2500);
 }
-
-// Swipe down to dismiss sheets
-let touchStartY = 0;
-['productSheet','cartSheet'].forEach(id => {
-  const el = document.getElementById(id);
-  el.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; });
-  el.addEventListener('touchend', e => { if (e.changedTouches[0].clientY - touchStartY > 80) { closeSheet(); closeCart(); } });
-});
-
-// Re-show step nav when re-entering scan
-document.querySelectorAll('[onclick*="screen-scan"]').forEach(el => {
-  el.addEventListener('click', () => {
-    const nav = document.querySelector('.scan-steps-nav');
-    if (nav) nav.style.display = 'flex';
-  });
-});
 </script>
 </div>
 </body>

@@ -640,14 +640,14 @@ html,body{width:100%;max-width:430px;margin:0 auto;height:100vh;overflow:hidden;
       <div class="ctl-section-label">Lighting</div>
       <div class="ctl-items-row">
         <div class="ctl-item" onclick="toggleCtlItem(this)"><div class="ctl-item-img ci-1"></div><div class="ctl-item-info"><div class="ctl-item-name">Arch Floor Lamp</div><div class="ctl-item-price">$250</div><div class="ctl-item-add">+ Add</div></div></div>
-        <div class="ctl-item selected" onclick="toggleCtlItem(this)"><div class="ctl-item-img ci-2"></div><div class="ctl-item-info"><div class="ctl-item-name">Brass Table Lamp</div><div class="ctl-item-price">$890</div><div class="ctl-item-add">✓ Added</div></div></div>
+        <div class="ctl-item on selected" onclick="toggleCtlItem(this)"><div class="ctl-item-img ci-2"></div><div class="ctl-item-info"><div class="ctl-item-name">Brass Table Lamp</div><div class="ctl-item-price">$890</div><div class="ctl-item-add">✓ Added</div></div></div>
         <div class="ctl-item" onclick="toggleCtlItem(this)"><div class="ctl-item-img ci-1"></div><div class="ctl-item-info"><div class="ctl-item-name">Sconce Pair</div><div class="ctl-item-price">$320</div><div class="ctl-item-add">+ Add</div></div></div>
       </div>
     </div>
     <div class="ctl-section">
       <div class="ctl-section-label">Tables & Storage</div>
       <div class="ctl-items-row">
-        <div class="ctl-item selected" onclick="toggleCtlItem(this)"><div class="ctl-item-img ci-3"></div><div class="ctl-item-info"><div class="ctl-item-name">Walnut Side Table</div><div class="ctl-item-price">$299</div><div class="ctl-item-add">✓ Added</div></div></div>
+        <div class="ctl-item on selected" onclick="toggleCtlItem(this)"><div class="ctl-item-img ci-3"></div><div class="ctl-item-info"><div class="ctl-item-name">Walnut Side Table</div><div class="ctl-item-price">$299</div><div class="ctl-item-add">✓ Added</div></div></div>
         <div class="ctl-item" onclick="toggleCtlItem(this)"><div class="ctl-item-img ci-4"></div><div class="ctl-item-info"><div class="ctl-item-name">Bookcase Unit</div><div class="ctl-item-price">$800</div><div class="ctl-item-add">+ Add</div></div></div>
         <div class="ctl-item" onclick="toggleCtlItem(this)"><div class="ctl-item-img ci-5"></div><div class="ctl-item-info"><div class="ctl-item-name">Console Table</div><div class="ctl-item-price">$549</div><div class="ctl-item-add">+ Add</div></div></div>
       </div>
@@ -816,7 +816,7 @@ html,body{width:100%;max-width:430px;margin:0 auto;height:100vh;overflow:hidden;
     </div>
 
     <button onclick="regenerateMoodboard()" style="width:100%;padding:14px;background:rgba(201,169,110,0.1);border:1px solid rgba(201,169,110,0.25);border-radius:14px;color:var(--gold);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">✦ Regenerate Layout</button>
-    <button onclick="switchScreen('screen-scan',null);gotoStep(1);" style="width:100%;padding:16px;background:var(--gold);color:var(--ink);border:none;border-radius:14px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:500;margin-bottom:16px;">Shop These Items →</button>
+    <button onclick="switchScreen('screen-scan',null);goToScanStep(1);" style="width:100%;padding:16px;background:var(--gold);color:var(--ink);border:none;border-radius:14px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:500;margin-bottom:16px;">Shop These Items →</button>
   </div>
 </div>
 
@@ -893,7 +893,7 @@ html,body{width:100%;max-width:430px;margin:0 auto;height:100vh;overflow:hidden;
 </div>
 
 <!-- ══ PRODUCT DETAIL SHEET ══ -->
-<div class="sheet-backdrop" id="sheetBackdrop" onclick="closeSheet()"></div>
+<div class="sheet-backdrop" id="sheetBackdrop"   onclick="closeSheet()"></div>
 <div class="bottom-sheet" id="productSheet">
   <div class="sheet-handle"></div>
   <div class="sheet-img"><div class="sheet-img-bg" id="sheetImgBg" style="background:linear-gradient(145deg,#E8DDD0,#C4B098,#A8907A);"></div></div>
@@ -989,7 +989,7 @@ function goToScanStep(step) {
 function submitOrder() {
   cartCount = 0;
   document.getElementById('cartBadge').textContent = '0';
-  document.getElementById('cartSheetCount').textContent = '(0)';
+  document.getElementById('cartCount').textContent = '(0)';
   document.querySelectorAll('.scan-step-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('scan-panel-success').classList.add('active');
   // Hide step nav for success
@@ -1009,6 +1009,7 @@ function openProductSheet(name, price, hotel, cat, desc, imgClass) {
   document.getElementById('productSheet').classList.add('open');
 }
 
+function closeAll() { closeSheet(); closeCart(); }
 function closeSheet() {
   document.getElementById('sheetBackdrop').classList.remove('open');
   document.getElementById('productSheet').classList.remove('open');
@@ -1028,7 +1029,7 @@ function closeCart() {
 function addToCartM() {
   cartCount++;
   document.getElementById('cartBadge').textContent = cartCount;
-  document.getElementById('cartSheetCount').textContent = '(' + cartCount + ')';
+  document.getElementById('cartCount').textContent = '(' + cartCount + ')';
   showToast('Added to your bag');
 }
 

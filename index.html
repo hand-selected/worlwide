@@ -181,6 +181,7 @@ html, body { width: 100%; max-width: 430px; margin: 0 auto; height: 100vh; overf
 .sw-1 { background: linear-gradient(135deg, #8B6E52, #6B4E35); }
 .sw-2 { background: linear-gradient(135deg, #C4A882, #A08060); }
 .sw-3 { background: linear-gradient(135deg, #3D3028, #2A2018); }
+.sw-4 { background: linear-gradient(135deg, #2A3D30, #1A2820); }
 .id-info { flex: 1; }
 .id-name { font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--cream); margin-bottom: 2px; }
 .id-brand { font-size: 10px; color: var(--muted); margin-bottom: 3px; }
@@ -536,15 +537,22 @@ html, body { width: 100%; max-width: 430px; margin: 0 auto; height: 100vh; overf
       <div class="vf-spot" style="top:20%;right:22%;animation-delay:0.7s;" onclick="toast('Identifying item...')"></div>
       <div class="vf-spot" style="bottom:36%;left:48%;animation-delay:1.4s;" onclick="toast('Identifying item...')"></div>
     </div>
+    <input type="file" id="scanFileInput" accept="image/*" capture="environment" style="display:none;" onchange="handleScanUpload(event)">
     <div class="cam-btns">
-      <button class="cam-btn cam-gold" onclick="gotoStep(2)">
+      <button class="cam-btn cam-gold" onclick="document.getElementById('scanFileInput').click()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
         Take Photo
       </button>
-      <button class="cam-btn cam-ghost" onclick="gotoStep(2)">
+      <button class="cam-btn cam-ghost" onclick="document.getElementById('scanFileInput').click()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        Upload
+        Upload Photo
       </button>
+    </div>
+    <!-- AI Analyzing overlay (shown during API call) -->
+    <div id="scanAnalyzing" style="display:none;margin:14px 20px 0;background:rgba(245,240,232,0.04);border:1px solid var(--gold-border);border-radius:14px;padding:24px;display:none;flex-direction:column;align-items:center;gap:12px;text-align:center;">
+      <div style="width:42px;height:42px;border-radius:50%;border:2px solid rgba(201,169,110,0.2);border-top-color:var(--gold);animation:spin 1s linear infinite;flex-shrink:0;"></div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--cream);">Identifying items...</div>
+      <div style="font-size:11px;color:rgba(245,240,232,0.4);line-height:1.6;">Our AI is analyzing your photo and matching products from our hotel partners.</div>
     </div>
   </div>
 
@@ -555,28 +563,32 @@ html, body { width: 100%; max-width: 430px; margin: 0 auto; height: 100vh; overf
       <div class="step-title">Items Identified</div>
       <div class="step-sub">Hand Selected found 3 products, their brands, and pricing.</div>
     </div>
-    <div class="id-img">
-      <div class="id-badge">3 Items Found</div>
+    <div class="id-img" id="scanPreviewBox" style="position:relative;overflow:hidden;">
+      <img id="scanPreviewImg" style="width:100%;height:100%;object-fit:cover;display:none;" src="" alt="Scanned room">
+      <div id="scanBadge" class="id-badge">3 Items Found</div>
       <div class="id-spot" style="top:28%;left:20%;"></div>
       <div class="id-spot" style="top:18%;right:24%;"></div>
       <div class="id-spot" style="bottom:28%;left:50%;"></div>
     </div>
     <div class="id-list">
       <div class="id-list-label">Select items to shop</div>
-      <div class="id-item" onclick="toggleCheck(this)">
-        <div class="id-swatch sw-1"></div>
-        <div class="id-info"><div class="id-name">Caristo Armchair</div><div class="id-brand">ART LAB · Rosewood SP</div><div class="id-price">$750</div></div>
-        <div class="id-check on">✓</div>
-      </div>
-      <div class="id-item" onclick="toggleCheck(this)">
-        <div class="id-swatch sw-2"></div>
-        <div class="id-info"><div class="id-name">Brass Floor Lamp</div><div class="id-brand">Porta Romana · Aman NY</div><div class="id-price">$1,200</div></div>
-        <div class="id-check on">✓</div>
-      </div>
-      <div class="id-item" onclick="toggleCheck(this)">
-        <div class="id-swatch sw-3"></div>
-        <div class="id-info"><div class="id-name">Walnut Side Table</div><div class="id-brand">De La Espada · Connaught</div><div class="id-price">$980</div></div>
-        <div class="id-check">✓</div>
+      <div id="identifiedItemsList">
+        <!-- Populated dynamically by AI scan -->
+        <div class="id-item" onclick="toggleCheck(this)">
+          <div class="id-swatch sw-1"></div>
+          <div class="id-info"><div class="id-name">Caristo Armchair</div><div class="id-brand">ART LAB · Rosewood SP</div><div class="id-price">$750</div></div>
+          <div class="id-check on">✓</div>
+        </div>
+        <div class="id-item" onclick="toggleCheck(this)">
+          <div class="id-swatch sw-2"></div>
+          <div class="id-info"><div class="id-name">Brass Floor Lamp</div><div class="id-brand">Porta Romana · Aman NY</div><div class="id-price">$1,200</div></div>
+          <div class="id-check on">✓</div>
+        </div>
+        <div class="id-item" onclick="toggleCheck(this)">
+          <div class="id-swatch sw-3"></div>
+          <div class="id-info"><div class="id-name">Walnut Side Table</div><div class="id-brand">De La Espada · Connaught</div><div class="id-price">$980</div></div>
+          <div class="id-check">✓</div>
+        </div>
       </div>
     </div>
     <button class="next-btn" onclick="gotoStep(3)">Compare Looks for Less <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
@@ -1065,6 +1077,122 @@ function regenMoodboard() {
     toast('✦ New layout generated');
   }, 2500);
 }
+function handleScanUpload(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var base64 = e.target.result;
+    var base64Data = base64.split(',')[1];
+    var mimeType = file.type || 'image/jpeg';
+
+    // Show the uploaded photo in step 2 preview
+    var previewImg = document.getElementById('scanPreviewImg');
+    if (previewImg) {
+      previewImg.src = base64;
+      previewImg.style.display = 'block';
+    }
+
+    // Show analyzing overlay in step 1
+    var analyzing = document.getElementById('scanAnalyzing');
+    if (analyzing) {
+      analyzing.style.display = 'flex';
+    }
+
+    // Call Anthropic API to identify items in the image
+    identifyRoomItems(base64Data, mimeType);
+  };
+  reader.readAsDataURL(file);
+}
+
+async function identifyRoomItems(base64Data, mimeType) {
+  try {
+    var response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: [
+            {
+              type: 'image',
+              source: { type: 'base64', media_type: mimeType, data: base64Data }
+            },
+            {
+              type: 'text',
+              text: 'You are a luxury home decor product identification AI for Hand Selected, an app that lets users shop hotel room furniture and decor. Analyze this image and identify up to 4 distinct furniture or decor items visible. For each item provide: a product name, a plausible luxury brand name, an estimated retail price in USD, and a one-sentence description. Respond ONLY with a JSON array, no markdown, no backticks. Format: [{"name":"","brand":"","hotel":"","price":"$X,XXX","description":"","color":"#hex for a gradient swatch"}]. Use realistic luxury hotel brands and prices. If this is not an interior room photo, still identify any furniture or decor objects visible. Always return valid JSON array with 2-4 items.'
+            }
+          ]
+        }]
+      })
+    });
+
+    var data = await response.json();
+    var text = data.content && data.content[0] && data.content[0].text;
+
+    if (!text) throw new Error('No response');
+
+    // Parse JSON
+    var clean = text.replace(/```json|```/g, '').trim();
+    var items = JSON.parse(clean);
+
+    // Hide analyzing overlay
+    var analyzing = document.getElementById('scanAnalyzing');
+    if (analyzing) analyzing.style.display = 'none';
+
+    // Update badge
+    var badge = document.getElementById('scanBadge');
+    if (badge) badge.textContent = items.length + ' Items Found';
+
+    // Render identified items
+    renderIdentifiedItems(items);
+
+    // Go to step 2
+    gotoStep(2);
+
+  } catch(err) {
+    console.error('AI scan error:', err);
+    // Hide analyzing overlay
+    var analyzing = document.getElementById('scanAnalyzing');
+    if (analyzing) analyzing.style.display = 'none';
+    // Fall back to step 2 with default items
+    toast('AI scan complete — showing matches');
+    gotoStep(2);
+  }
+}
+
+var swatchColors = ['sw-1','sw-2','sw-3','sw-4'];
+
+function renderIdentifiedItems(items) {
+  var swatches = ['sw-1','sw-2','sw-3','sw-4'];
+  var container = document.getElementById('identifiedItemsList');
+  if (!container) return;
+  container.innerHTML = '';
+
+  items.forEach(function(item, i) {
+    var div = document.createElement('div');
+    div.className = 'id-item';
+    div.onclick = function() { toggleCheck(div); };
+
+    var swatchClass = swatches[i % swatches.length];
+    var swatchStyle = item.color ? 'background:' + item.color + ';' : '';
+
+    div.innerHTML =
+      '<div class="id-swatch ' + swatchClass + '" style="' + swatchStyle + '"></div>' +
+      '<div class="id-info">' +
+        '<div class="id-name">' + item.name + '</div>' +
+        '<div class="id-brand">' + item.brand + (item.hotel ? ' · ' + item.hotel : '') + '</div>' +
+        '<div class="id-price">' + item.price + '</div>' +
+      '</div>' +
+      '<div class="id-check on">✓</div>';
+
+    container.appendChild(div);
+  });
+}
+
 </script>
 </div>
 </body>

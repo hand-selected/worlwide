@@ -158,7 +158,7 @@ html, body { width: 100%; max-width: 430px; margin: 0 auto; height: 100vh; overf
 .fade-up { animation: fadeUp 0.3s ease; }
 
 .cam-btns { display: flex; gap: 10px; margin: 12px 20px 0; }
-.cam-btn { flex: 1; padding: 14px; border-radius: 13px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 7px; transition: opacity 0.2s; }
+.cam-btn { flex: 1; padding: 14px; border-radius: 13px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 7px; transition: opacity 0.2s; position: relative; overflow: hidden; }
 .cam-btn:active { opacity: 0.8; }
 .cam-gold { background: var(--gold); color: var(--ink); font-weight: 500; }
 .cam-ghost { background: rgba(245,240,232,0.07); border: 1px solid rgba(245,240,232,0.18); color: var(--cream); }
@@ -537,19 +537,20 @@ html, body { width: 100%; max-width: 430px; margin: 0 auto; height: 100vh; overf
       <div class="vf-spot" style="top:20%;right:22%;animation-delay:0.7s;" onclick="toast('Identifying item...')"></div>
       <div class="vf-spot" style="bottom:36%;left:48%;animation-delay:1.4s;" onclick="toast('Identifying item...')"></div>
     </div>
-    <input type="file" id="scanFileInput" accept="image/*" capture="environment" style="display:none;" onchange="handleScanUpload(event)">
     <div class="cam-btns">
-      <button class="cam-btn cam-gold" onclick="document.getElementById('scanFileInput').click()">
+      <label class="cam-btn cam-gold" style="cursor:pointer;">
+        <input type="file" accept="image/*" capture="environment" style="position:absolute;opacity:0;width:0;height:0;" onchange="handleScanUpload(event)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
         Take Photo
-      </button>
-      <button class="cam-btn cam-ghost" onclick="document.getElementById('scanFileInput').click()">
+      </label>
+      <label class="cam-btn cam-ghost" style="cursor:pointer;">
+        <input type="file" accept="image/*" style="position:absolute;opacity:0;width:0;height:0;" onchange="handleScanUpload(event)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
         Upload Photo
-      </button>
+      </label>
     </div>
     <!-- AI Analyzing overlay (shown during API call) -->
-    <div id="scanAnalyzing" style="display:none;margin:14px 20px 0;background:rgba(245,240,232,0.04);border:1px solid var(--gold-border);border-radius:14px;padding:24px;display:none;flex-direction:column;align-items:center;gap:12px;text-align:center;">
+    <div id="scanAnalyzing" style="margin:14px 20px 0;background:rgba(245,240,232,0.04);border:1px solid var(--gold-border);border-radius:14px;padding:24px;flex-direction:column;align-items:center;gap:12px;text-align:center;display:none;">
       <div style="width:42px;height:42px;border-radius:50%;border:2px solid rgba(201,169,110,0.2);border-top-color:var(--gold);animation:spin 1s linear infinite;flex-shrink:0;"></div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--cream);">Identifying items...</div>
       <div style="font-size:11px;color:rgba(245,240,232,0.4);line-height:1.6;">Our AI is analyzing your photo and matching products from our hotel partners.</div>
@@ -840,13 +841,13 @@ html, body { width: 100%; max-width: 430px; margin: 0 auto; height: 100vh; overf
   <div class="scan-tab" onclick="goTo('s-scan',null);gotoStep(1)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
   </div>
-  <button class="tab" id="tab-moodboard" onclick="goTo('s-moodboard',this.id)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-    <span>Moodboard</span>
-  </button>
   <button class="tab" id="tab-wishlist" onclick="goTo('s-wishlist',this.id)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
     <span>Saved</span>
+  </button>
+  <button class="tab" id="tab-profile" onclick="goTo('s-profile',this.id)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>Profile</span>
   </button>
 </div>
 

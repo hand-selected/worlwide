@@ -442,7 +442,7 @@ html, body { width: 100%; max-width: 430px; margin: 0 auto; height: 100vh; overf
     </div>
   </div>
 
-  <div class="hero" onclick="goTo('s-hotels', 'tab-hotels')" style="margin-bottom:14px;">
+  <div class="hero" onclick="goTo('s-hotels', 'tab-hotels')" style="margin-bottom:14px;background-image:url('https://images.unsplash.com/photo-1590490360182-c33d57733427?w=1200&q=80');background-size:cover;background-position:center;">
     <div class="hero-overlay">
       <div class="hero-pill">✦ Exclusive Partner</div>
       <h2>Rosewood<br>São Paulo</h2>
@@ -456,11 +456,11 @@ html, body { width: 100%; max-width: 430px; margin: 0 auto; height: 100vh; overf
     <button class="sec-more" onclick="goTo('s-hotels','tab-hotels')">See All</button>
   </div>
   <div class="hscroll" style="margin-bottom:22px;">
-    <div class="hotel-pill" onclick="goTo('s-hotels','tab-hotels')"><div class="hotel-pill-img hi-1"></div><div class="hotel-pill-info"><div class="hotel-pill-name">Aman New York</div><div class="hotel-pill-loc">New York · 31 items</div></div></div>
-    <div class="hotel-pill" onclick="goTo('s-hotels','tab-hotels')"><div class="hotel-pill-img hi-2"></div><div class="hotel-pill-info"><div class="hotel-pill-name">The Connaught</div><div class="hotel-pill-loc">London · 28 items</div></div></div>
-    <div class="hotel-pill" onclick="goTo('s-hotels','tab-hotels')"><div class="hotel-pill-img hi-3"></div><div class="hotel-pill-info"><div class="hotel-pill-name">1 Hotel SoBe</div><div class="hotel-pill-loc">Miami · 38 items</div></div></div>
-    <div class="hotel-pill" onclick="goTo('s-hotels','tab-hotels')"><div class="hotel-pill-img hi-4"></div><div class="hotel-pill-info"><div class="hotel-pill-name">Four Seasons</div><div class="hotel-pill-loc">Florence · 52 items</div></div></div>
-    <div class="hotel-pill" onclick="goTo('s-hotels','tab-hotels')"><div class="hotel-pill-img hi-5"></div><div class="hotel-pill-info"><div class="hotel-pill-name">Bvlgari Milano</div><div class="hotel-pill-loc">Milan · 24 items</div></div></div>
+    <div class="hotel-pill" onclick="goTo('s-hotels','tab-hotels')"><div class="hotel-pill-img hi-1" style="background-image:url('https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&q=80');background-size:cover;background-position:center;"></div><div class="hotel-pill-info"><div class="hotel-pill-name">Aman New York</div><div class="hotel-pill-loc">New York · 31 items</div></div></div>
+    <div class="hotel-pill" onclick="goTo('s-hotels','tab-hotels')"><div class="hotel-pill-img hi-2" style="background-image:url('https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&q=80');background-size:cover;background-position:center;"></div><div class="hotel-pill-info"><div class="hotel-pill-name">The Connaught</div><div class="hotel-pill-loc">London · 28 items</div></div></div>
+    <div class="hotel-pill" onclick="goTo('s-hotels','tab-hotels')"><div class="hotel-pill-img hi-3" style="background-image:url('https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&q=80');background-size:cover;background-position:center;"></div><div class="hotel-pill-info"><div class="hotel-pill-name">1 Hotel SoBe</div><div class="hotel-pill-loc">Miami · 38 items</div></div></div>
+    <div class="hotel-pill" onclick="goTo('s-hotels','tab-hotels')"><div class="hotel-pill-img hi-4" style="background-image:url('https://images.unsplash.com/photo-1444201983204-c43cbd584d93?w=400&q=80');background-size:cover;background-position:center;"></div><div class="hotel-pill-info"><div class="hotel-pill-name">Four Seasons</div><div class="hotel-pill-loc">Florence · 52 items</div></div></div>
+    <div class="hotel-pill" onclick="goTo('s-hotels','tab-hotels')"><div class="hotel-pill-img hi-5" style="background-image:url('https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=400&q=80');background-size:cover;background-position:center;"></div><div class="hotel-pill-info"><div class="hotel-pill-name">Bvlgari Milano</div><div class="hotel-pill-loc">Milan · 24 items</div></div></div>
   </div>
 
   <div class="chips" style="margin-bottom:18px;">
@@ -800,11 +800,11 @@ html, body { width: 100%; max-width: 430px; margin: 0 auto; height: 100vh; overf
 <div class="screen screen-light" id="s-hotels">
   <div class="sb"></div>
   <div class="topbar topbar-light"><div class="logo logo-dark">Hotels</div></div>
-  <div class="hotel-card hc-1" onclick="toast('Loading Rosewood São Paulo...')"><div class="hc-badge">Exclusive</div><div class="hc-overlay"><div class="hc-name">Rosewood São Paulo</div><div class="hc-loc">São Paulo, Brazil</div><div class="hc-foot"><span class="hc-count">47 items</span><div class="hc-arrow">→</div></div></div></div>
-  <div class="hotel-card hc-2" onclick="toast('Loading Aman New York...')"><div class="hc-badge">New</div><div class="hc-overlay"><div class="hc-name">Aman New York</div><div class="hc-loc">New York, USA</div><div class="hc-foot"><span class="hc-count">31 items</span><div class="hc-arrow">→</div></div></div></div>
-  <div class="hotel-card hc-3" onclick="toast('Loading The Connaught...')"><div class="hc-overlay"><div class="hc-name">The Connaught</div><div class="hc-loc">London, UK</div><div class="hc-foot"><span class="hc-count">28 items</span><div class="hc-arrow">→</div></div></div></div>
-  <div class="hotel-card hc-4" onclick="toast('Loading 1 Hotel South Beach...')"><div class="hc-badge" style="background:var(--gold-lt);color:var(--ink)">Sustainable</div><div class="hc-overlay"><div class="hc-name">1 Hotel South Beach</div><div class="hc-loc">Miami Beach, USA</div><div class="hc-foot"><span class="hc-count">38 items</span><div class="hc-arrow">→</div></div></div></div>
-  <div class="hotel-card hc-5" onclick="toast('Loading Four Seasons Florence...')"><div class="hc-overlay"><div class="hc-name">Four Seasons Florence</div><div class="hc-loc">Florence, Italy</div><div class="hc-foot"><span class="hc-count">52 items</span><div class="hc-arrow">→</div></div></div></div>
+  <div class="hotel-card hc-1" style="background-image:url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80');background-size:cover;background-position:center;" onclick="toast('Loading Rosewood São Paulo...')"><div class="hc-badge">Exclusive</div><div class="hc-overlay"><div class="hc-name">Rosewood São Paulo</div><div class="hc-loc">São Paulo, Brazil</div><div class="hc-foot"><span class="hc-count">47 items</span><div class="hc-arrow">→</div></div></div></div>
+  <div class="hotel-card hc-2" style="background-image:url('https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&q=80');background-size:cover;background-position:center;" onclick="toast('Loading Aman New York...')"><div class="hc-badge">New</div><div class="hc-overlay"><div class="hc-name">Aman New York</div><div class="hc-loc">New York, USA</div><div class="hc-foot"><span class="hc-count">31 items</span><div class="hc-arrow">→</div></div></div></div>
+  <div class="hotel-card hc-3" style="background-image:url('https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800&q=80');background-size:cover;background-position:center;" onclick="toast('Loading The Connaught...')"><div class="hc-overlay"><div class="hc-name">The Connaught</div><div class="hc-loc">London, UK</div><div class="hc-foot"><span class="hc-count">28 items</span><div class="hc-arrow">→</div></div></div></div>
+  <div class="hotel-card hc-4" style="background-image:url('https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&q=80');background-size:cover;background-position:center;" onclick="toast('Loading 1 Hotel South Beach...')"><div class="hc-badge" style="background:var(--gold-lt);color:var(--ink)">Sustainable</div><div class="hc-overlay"><div class="hc-name">1 Hotel South Beach</div><div class="hc-loc">Miami Beach, USA</div><div class="hc-foot"><span class="hc-count">38 items</span><div class="hc-arrow">→</div></div></div></div>
+  <div class="hotel-card hc-5" style="background-image:url('https://images.unsplash.com/photo-1444201983204-c43cbd584d93?w=800&q=80');background-size:cover;background-position:center;" onclick="toast('Loading Four Seasons Florence...')"><div class="hc-overlay"><div class="hc-name">Four Seasons Florence</div><div class="hc-loc">Florence, Italy</div><div class="hc-foot"><span class="hc-count">52 items</span><div class="hc-arrow">→</div></div></div></div>
 </div>
 
 <!-- ════════════════════════
